@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-add_executable(LuaBirali LuaBirali.cpp)
+add_executable(LuaBirali LuaBirali.cpp Scanner.cpp Token.cpp Expression.cpp Parser.cpp)
 
 target_precompile_headers ( LuaBirali
     PRIVATE
