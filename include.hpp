@@ -54,5 +54,6 @@ using uc                                     = unsigned char;
 #define mu std::make_unique
 #define mv std::move
 #define mksh std::make_shared
+#define g std::get
 
 } // namespace Birali

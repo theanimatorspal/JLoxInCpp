@@ -101,6 +101,22 @@ const Birali::sv TokenStrings[COUNT] = {
 
 std::ostream& operator<<(std::ostream& os, const TokenType& token);
 using Object = opt<var<Number, s, bool>>;
+enum ObjectIndex : size_t { ObjectIndex_Number, ObjectIndex_String, ObjectIndex_Boolean };
+inline s ToString(Object inObject) {
+    if (not inObject.has_value()) {
+        return "nil";
+    } else {
+        switch (inObject->index()) {
+            case ObjectIndex_Number:
+                return std::to_string(g<Number>(inObject.value()));
+            case ObjectIndex_String:
+                return g<s>(inObject.value());
+            case ObjectIndex_Boolean:
+                return std::to_string(g<bool>(inObject.value()));
+        }
+    }
+    return "nil";
+}
 
 struct Token {
     TokenType mType;

@@ -34,5 +34,11 @@
   "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\Parser.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\Parser.cpp",
   "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\Parser.cpp",
   "output": "CMakeFiles\\LuaBirali.dir\\Parser.cpp.obj"
+},
+{
+  "directory": "C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\Interpreter.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\Interpreter.cpp",
+  "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\Interpreter.cpp",
+  "output": "CMakeFiles\\LuaBirali.dir\\Interpreter.cpp.obj"
 }
 ]

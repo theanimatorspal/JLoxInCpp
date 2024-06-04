@@ -14,7 +14,7 @@ atype AstPrinter::Visit(Unary& inUnary) {
 
 atype AstPrinter::Visit(Literal& inLiteral) {
     if (not inLiteral.mObject.has_value()) {
-        return "nil";
+        return s("nil");
     }
     auto& LiteralValue = inLiteral.mObject.value();
     switch (LiteralValue.index()) {
@@ -31,5 +31,5 @@ atype AstPrinter::Visit(Literal& inLiteral) {
         default:
             break;
     }
-    return "";
+    return s("");
 }

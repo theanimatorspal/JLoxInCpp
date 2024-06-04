@@ -2,6 +2,7 @@
 #include "Scanner.hpp"
 #include "Expression.hpp"
 #include "Parser.hpp"
+#include "Interpreter.hpp"
 
 using namespace Birali;
 bool Lua::mHadError = false;
@@ -9,7 +10,7 @@ bool Lua::mHadError = false;
 void Lua::Error(int inLine, const sv inMessage) { Report(inLine, "", inMessage); }
 
 void Lua::Report(int inLine, const sv inWhere, const sv inMessage) {
-    std::cout << "[Line " << inLine << "] Error " << inWhere << ": " << inMessage;
+    std::cout << "[Line " << inLine << "] Error " << inWhere << ": " << inMessage << "\n";
     mHadError = true;
 }
 
@@ -37,6 +38,7 @@ void Lua::Run(const sv inCommand) {
     //     std::cout << token.ToString() << '\n';
     // }
     std::cout << AstPrinter().Print(*Expr) << "\n";
+    Interpreter().Interpret(*Expr);
 }
 
 void Lua::RunFile(const sv inFileName) {

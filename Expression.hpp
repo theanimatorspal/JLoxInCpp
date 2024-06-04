@@ -9,7 +9,7 @@ struct Binary;
 struct Unary;
 struct Grouping;
 struct Literal;
-using atype = var<up<Expr*>, s>;
+using atype = var<up<Expr*>, s, Object>;
 
 struct Visitor {
     virtual atype Visit(Binary& inBinary)     = 0;
