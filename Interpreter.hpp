@@ -1,130 +1,46 @@
 #pragma once
 #include "Expression.hpp"
+#include "Environment.hpp"
 
 namespace Birali {
 class Interpreter : public Visitor {
     public:
+    Interpreter() { mEnvironment = mu<Environment>(nullptr); }
     static bool mHadRuntimeError;
     class RuntimeError : public std::runtime_error {
         public:
         RuntimeError(Token inOperator, s inSt)
             : mOperator(inOperator),
-              std::runtime_error(inSt + "\n[line " + std::to_string(inOperator.mLine) + "]") {}
+              std::runtime_error(inSt + "\n[line " + std::to_string(inOperator.mLine) + "]") {
+            mHadRuntimeError = true;
+        }
 
         private:
         Token mOperator;
     };
 
-    void Interpret(Expr& inExp) {
-        try {
-            auto Value = g<Object>(Evaluate(inExp));
-            std::cout << "Output:" << ToString(Value) << "\n";
-        } catch (const RuntimeError& inError) {
-            std::cout << inError.what() << "\n";
-        }
-    }
+    void Interpret(v<up<Stmt>>& inStatements);
+    virtual atype Visit(Binary& inBinary);
+    virtual atype Visit(Grouping& inGrouping);
+    virtual atype Visit(Unary& inUnary);
+    virtual atype Visit(Literal& inLiteral);
+    virtual atype Visit(Variable& inExpression);
+    virtual atype Visit(Assign& inExpression);
 
-    virtual atype Visit(Binary& inBinary) {
-        auto Left  = g<Object>(Evaluate(*inBinary.mLeft)).value();
-        auto Right = g<Object>(Evaluate(*inBinary.mRight)).value();
-        switch (inBinary.mOperator.mType) {
-            case BANG_EQUAL: {
-                return not IsEqual(Left, Right);
-            }
-            case EQUAL_EQUAL: {
-                return IsEqual(Left, Right);
-            }
-            case GREATER: {
-                CheckNumberOperands(inBinary.mOperator, Left, Right);
-                return g<Number>(Left) > g<Number>(Right);
-            }
-            case GREATER_EQUAL: {
-                CheckNumberOperands(inBinary.mOperator, Left, Right);
-                return g<Number>(Left) >= g<Number>(Right);
-            }
-            case LESS: {
-                CheckNumberOperands(inBinary.mOperator, Left, Right);
-                return g<Number>(Left) < g<Number>(Right);
-            }
-            case LESS_EQUAL: {
-                CheckNumberOperands(inBinary.mOperator, Left, Right);
-                return g<Number>(Left) <= g<Number>(Right);
-            }
-            case MINUS: {
-                CheckNumberOperands(inBinary.mOperator, Left, Right);
-                return g<Number>(Left) - g<Number>(Right);
-            }
-            case SLASH: {
-                CheckNumberOperands(inBinary.mOperator, Left, Right);
-                return g<Number>(Left) / g<Number>(Right);
-            }
-            case STAR: {
-                CheckNumberOperands(inBinary.mOperator, Left, Right);
-                return g<Number>(Left) * g<Number>(Right);
-            }
-            case PLUS: {
-                if (Left.index() == ObjectIndex_String and Right.index() == ObjectIndex_String) {
-                    return g<s>(Left) + g<s>(Right);
-                }
-                if (Left.index() == ObjectIndex_Number and Right.index() == ObjectIndex_Number) {
-                    return g<Number>(Left) + g<Number>(Right);
-                }
-            }
-            default:
-                break;
-        }
-        return std::nullopt;
-    };
-    virtual atype Visit(Grouping& inGrouping) { return Evaluate(*inGrouping.mExpr); };
-    virtual atype Visit(Unary& inUnary) {
-        atype Right = Evaluate(*inUnary.mExpr);
-        switch (inUnary.mOperator.mType) {
-            case MINUS:
-                CheckNumberOperands(inUnary.mOperator, g<Object>(Right));
-                return -g<Number>(g<Object>(Right).value());
-                break;
-            case BANG:
-                return not IsTruthy(g<Object>(Right));
-                break;
-            default:
-                break;
-        }
-        return std::nullopt;
-    };
-    virtual atype Visit(Literal& inLiteral) { return inLiteral.mObject.value(); };
+    virtual atype Visit(ExpressionStmt& inExpression);
+    virtual atype Visit(PrintStmt& inExpression);
+    virtual atype Visit(VarStmt& inExpression);
+    virtual atype Visit(BlockStmt& inExpression);
 
-    atype Evaluate(Expr& inExpr) { return inExpr.Accept(*this); }
-    bool IsTruthy(Object inObject) {
-        if (inObject == std::nullopt) {
-            return false;
-        }
-        if (inObject->index() == ObjectIndex_Boolean) {
-            return g<bool>(inObject.value());
-        }
-        return true;
-    }
-    bool IsEqual(Object a, Object b) {
-        if (a == std::nullopt and b == std::nullopt) {
-            return true;
-        }
-        if (a == std::nullopt) {
-            return false;
-        }
-        return a == b;
-    }
+    void Execute(Stmt& inStmt);
+    atype Evaluate(Expr& inExpr);
+    bool IsTruthy(Object inObject);
+    bool IsEqual(Object a, Object b);
+    void CheckNumberOperands(Token inOperator, Object inOperand);
+    void CheckNumberOperands(Token inOperator, Object inLeft, Object inRight);
+    void ExecuteBlock(v<up<Stmt>>& inStatements, up<Environment> inEnvironment);
 
-    void CheckNumberOperands(Token inOperator, Object inOperand) {
-        if (inOperand->index() == ObjectIndex_Number) {
-            return;
-        }
-        throw RuntimeError(inOperator, "Operand must be a number.");
-    }
-
-    void CheckNumberOperands(Token inOperator, Object inLeft, Object inRight) {
-        if (inLeft->index() == ObjectIndex_Number and inRight->index() == ObjectIndex_Number) {
-            return;
-        }
-        throw RuntimeError(inOperator, "Operands must be a number.");
-    }
+    private:
+    up<Environment> mEnvironment;
 };
 } // namespace Birali

@@ -32,13 +32,18 @@ void Lua::Run(const sv inCommand) {
     Scanner scanner(inCommand);
     auto Tokens = scanner.ScanTokens();
     Parser Parser(Tokens);
-    auto Expr = Parser.Parse();
     if (mHadError) return;
     // for (Token token : Tokens) {
     //     std::cout << token.ToString() << '\n';
     // }
-    std::cout << AstPrinter().Print(*Expr) << "\n";
-    Interpreter().Interpret(*Expr);
+    // std::cout << AstPrinter().Print(*Expr) << "\n";
+    // mInterpreter.Interpret(*Expr);
+    auto Statements = Parser.Parse();
+    mInterpreter.Interpret(Statements);
+
+    if (mInterpreter.mHadRuntimeError) {
+        exit(70);
+    }
 }
 
 void Lua::RunFile(const sv inFileName) {
@@ -54,17 +59,19 @@ void Lua::RunFile(const sv inFileName) {
 
 int main(int argc, char** argv) {
     Birali::Lua lua;
+    lua.RunFile("main.luabirali");
+    // if (argc == 2) {
+    //     lua.RunFile(argv[1]);
+    // } else if (argc > 2) {
+    //     std::cout << "LuaBirali [fileName.lb]\n";
+    // } else {
+    //     lua.RunPrompt();
+    // }
 
-    if (argc == 2) {
-        lua.RunFile(argv[1]);
-    } else if (argc > 2) {
-        std::cout << "LuaBirali [fileName.lb]\n";
-    } else {
-        lua.RunPrompt();
-    }
     // auto Expr = mu<Binary>(mu<Unary>(Token(MINUS, "-", std::nullopt, 1), mu<Literal>(23.4)),
     //                        Token(STAR, "*", std::nullopt, 1),
     //                        mu<Grouping>(mu<Literal>(56.43)));
     // AstPrinter Print;
     // std::cout << Print.Print(*Expr) << "\n";
+    return 0;
 }

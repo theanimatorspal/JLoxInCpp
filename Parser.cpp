@@ -18,7 +18,21 @@ Token Parser::Consume(TokenType inType, const sv inStr) {
     throw Error(Peek(), inStr);
 }
 
-up<Expr> Parser::Expression() { return Equality(); }
+up<Expr> Parser::Expression() { return Assignment(); }
+
+up<Expr> Parser::Assignment() {
+    up<Expr> expr = Equality();
+    if (Match(EQUAL)) {
+        Token Equals   = Previous();
+        up<Expr> Value = Assignment();
+        auto Variable  = dynamic_cast<struct Variable*>(expr.get());
+        if (Variable) {
+            return mu<Assign>(Variable->mName, mv(Value));
+        }
+        Error(Equals, "Invalid Assignment Target.");
+    }
+    return mv(expr);
+}
 
 up<Expr> Parser::Equality() {
     auto Exp = Comparision();
@@ -73,6 +87,9 @@ up<Expr> Parser::Primary() {
     if (Match(FALSE)) return mu<Literal>(false);
     if (Match(TRUE)) return mu<Literal>(true);
     if (Match(NIL)) return mu<Literal>(std::nullopt);
+    if (Match(IDENTIFIER)) {
+        return mu<Variable>(Previous());
+    }
 
     if (Match(NUMBER, STRING)) {
         return mu<Literal>(Previous().mLiteral);
@@ -85,4 +102,51 @@ up<Expr> Parser::Primary() {
     }
 
     throw Error(Peek(), "Expected expression.");
+}
+
+up<Stmt> Parser::Statement() {
+    if (Match(PRINT)) return PrintStatement();
+    if (Match(LEFT_BRACE)) return mu<BlockStmt>(BlockStatement());
+    return ExpressionStatement();
+}
+
+up<Stmt> Parser::PrintStatement() {
+    up<Expr> Value = Expression();
+    Consume(SEMICOLON, "Expected ';' after value.");
+    return mu<Birali::PrintStmt>(mv(Value));
+}
+
+up<Stmt> Parser::ExpressionStatement() {
+    up<Expr> Value = Expression();
+    Consume(SEMICOLON, "Expected ';' after value.");
+    return mu<Birali::ExpressionStmt>(mv(Value));
+}
+
+v<up<Stmt>> Parser::BlockStatement() {
+    v<up<Stmt>> Statements;
+    while (not Check(RIGHT_BRACE) and not IsAtEnd()) {
+        Statements.push_back(mv(Declaration()));
+    }
+    Consume(RIGHT_BRACE, "Expected '}' after block.");
+    return mv(Statements);
+}
+
+up<Stmt> Parser::Declaration() {
+    try {
+        if (Match(VAR)) return VarDeclartion();
+        return Statement();
+    } catch (ParseError& inError) {
+        Synchronize();
+        return nullptr;
+    }
+}
+
+up<Stmt> Parser::VarDeclartion() {
+    Token Name           = Consume(IDENTIFIER, "Expected Variable Name.");
+    up<Expr> Initializer = nullptr;
+    if (Match(EQUAL)) {
+        Initializer = Expression();
+    }
+    Consume(SEMICOLON, "Expected ';' after declaration.");
+    return mu<VarStmt>(Name, mv(Initializer));
 }

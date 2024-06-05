@@ -1,5 +1,6 @@
 #pragma once
 #include "include.hpp"
+#include "Interpreter.hpp"
 
 namespace Birali {
 struct Lua {
@@ -11,5 +12,6 @@ struct Lua {
 
     private:
     static bool mHadError;
+    Interpreter mInterpreter;
 };
 } // namespace Birali

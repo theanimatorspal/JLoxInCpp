@@ -14,12 +14,20 @@ class Parser {
     up<Expr> Factor();
     up<Expr> Unary();
     up<Expr> Primary();
-    up<Expr> Parse() {
-        try {
-            return Expression();
-        } catch (ParseError& inError) {
-            return nullptr;
+    up<Expr> Assignment();
+
+    up<Stmt> Statement();
+    up<Stmt> PrintStatement();
+    up<Stmt> ExpressionStatement();
+    up<Stmt> Declaration();
+    up<Stmt> VarDeclartion();
+    v<up<Stmt>> BlockStatement();
+    v<up<Stmt>> Parse() {
+        v<up<Stmt>> Statements;
+        while (not IsAtEnd()) {
+            Statements.push_back(Declaration());
         }
+        return Statements;
     }
 
     private:
@@ -71,7 +79,7 @@ class Parser {
     }
     Parser::ParseError Error(Token inToken, const sv inMessage);
     Token Consume(TokenType inType, const sv inStr);
-    bool IsAtEnd() { return Peek().mType == EOF; }
+    bool IsAtEnd() { return Peek().mType == EOF_; }
     Token Peek() { return mTokens[mCurrent]; }
     Token Previous() { return mTokens[mCurrent - 1]; }
     const v<Token> mTokens;
