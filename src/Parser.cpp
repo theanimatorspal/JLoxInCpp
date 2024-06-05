@@ -102,8 +102,10 @@ up<Expr> Parser::Unary() {
         auto Right     = Unary();
         return mu<Birali::Unary>(Operator, mv(Right));
     }
-    return Primary();
+    return Call();
 }
+
+up<Expr> Parser::Call() {}
 
 up<Expr> Parser::Primary() {
     if (Match(FALSE)) return mu<Literal>(false);
@@ -132,6 +134,7 @@ up<Stmt> Parser::Statement() {
     if (Match(IF)) return IfStatement();
     if (Match(WHILE)) return WhileStatement();
     if (Match(FOR)) return ForStatement();
+    if (Match(BREAK)) return BreakStatement();
     return ExpressionStatement();
 }
 
@@ -242,4 +245,9 @@ up<Stmt> Parser::ForStatement() {
     }
 
     return Body;
+}
+
+up<Stmt> Parser::BreakStatement() {
+    Consume(SEMICOLON, "Expected ';' after break statement.");
+    return mu<BreakStmt>();
 }

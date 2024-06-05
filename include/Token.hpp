@@ -49,6 +49,7 @@ enum TokenType : int {
     TRUE,
     VAR,
     WHILE,
+    BREAK,
 
     EOF_,
     COUNT
@@ -96,6 +97,7 @@ const Birali::sv TokenStrings[COUNT] = {
      "TRUE",   // true
      "VAR",    // var
      "WHILE",  // while
+     "BREAK",  // break
      "EOF_"    // eof
 };
 

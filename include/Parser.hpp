@@ -17,6 +17,7 @@ class Parser {
     up<Expr> Assignment();
     up<Expr> Or();
     up<Expr> And();
+    up<Expr> Call();
 
     up<Stmt> Statement();
     up<Stmt> PrintStatement();
@@ -27,6 +28,7 @@ class Parser {
     up<Stmt> IfStatement();
     up<Stmt> WhileStatement();
     up<Stmt> ForStatement();
+    up<Stmt> BreakStatement();
     v<up<Stmt>> Parse() {
         v<up<Stmt>> Statements;
         while (not IsAtEnd()) {

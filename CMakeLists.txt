@@ -14,6 +14,8 @@ add_executable(LuaBirali
  src/Interpreter.cpp 
  src/Environment.cpp)
 
+ include_directories(include)
+
 target_precompile_headers ( LuaBirali
     PRIVATE
     <iostream>

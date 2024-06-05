@@ -12,7 +12,7 @@ struct Grouping;
 struct Literal;
 struct Variable;
 struct Assign;
-struct WhileStmt;
+struct Callee;
 
 struct ExpressionStmt;
 struct PrintStmt;
@@ -20,7 +20,13 @@ struct VarStmt;
 struct BlockStmt;
 struct IfStmt;
 struct WhileStmt;
-using atype = var<up<Expr*>, s, Object>;
+struct BreakStmt;
+
+struct Special {
+    bool mBreak = false;
+};
+using atype = var<up<Expr*>, s, Object, Special>;
+enum Atype : int { Atype_Expr, Atype_String, Atype_Object, Atype_Special };
 
 struct Visitor {
     virtual atype Visit(Binary& inBinary)             = 0;
@@ -30,6 +36,7 @@ struct Visitor {
     virtual atype Visit(Literal& inLiteral)           = 0;
     virtual atype Visit(Variable& inExpression)       = 0;
     virtual atype Visit(Assign& inExpression)         = 0;
+    virtual atype Visit(Callee& inExpression)         = 0;
 
     virtual atype Visit(ExpressionStmt& inExpression) = 0;
     virtual atype Visit(PrintStmt& inExpression)      = 0;
@@ -37,6 +44,7 @@ struct Visitor {
     virtual atype Visit(BlockStmt& inExpression)      = 0;
     virtual atype Visit(IfStmt& inExpression)         = 0;
     virtual atype Visit(WhileStmt& inExpression)      = 0;
+    virtual atype Visit(BreakStmt& inExpression)      = 0;
     virtual ~Visitor()                                = default;
 };
 
@@ -102,6 +110,15 @@ struct Assign : public Expr {
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 
+struct Callee : public Expr {
+    up<Expr> mCallee;
+    Token mParen;
+    v<up<Expr>> mArguments;
+    Callee(up<Expr> inCallee, Token inParen, v<up<Expr>> inArguments)
+        : mCallee(mv(inCallee)), mParen(inParen), mArguments(mv(inArguments)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
 struct ExpressionStmt : public Stmt {
     up<Expr> mExpr;
     ExpressionStmt(up<Expr> inExpr) : mExpr(mv(inExpr)) {}
@@ -143,6 +160,10 @@ struct WhileStmt : public Stmt {
     up<Stmt> mBody;
     WhileStmt(up<Expr> inCondition, up<Stmt> inBody)
         : mCondition(mv(inCondition)), mBody(mv(inBody)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
+struct BreakStmt : public Stmt {
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 

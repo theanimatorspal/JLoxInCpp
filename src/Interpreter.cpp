@@ -15,7 +15,7 @@ void Interpreter::Interpret(v<up<Stmt>>& inStmts) {
     // }
 }
 
-void Interpreter::Execute(Stmt& inStmt) { inStmt.Accept(*this); }
+atype Interpreter::Execute(Stmt& inStmt) { return inStmt.Accept(*this); }
 
 atype Interpreter::Visit(Binary& inBinary) {
     auto Left  = g<Object>(Evaluate(*inBinary.mLeft)).value();
@@ -197,7 +197,9 @@ void Interpreter::ExecuteBlock(v<up<Stmt>>& inStatements, up<Environment> inEnvi
 
 atype Interpreter::Visit(WhileStmt& inExpression) {
     while (IsTruthy(g<Object>(Evaluate(*inExpression.mCondition)))) {
-        Execute(*inExpression.mBody);
+        Execute(*inExpression.mBody); // TODO implement Break statement later
     }
     return std::nullopt;
 }
+
+atype Interpreter::Visit(BreakStmt& inExpression) { return Special{.mBreak = true}; }

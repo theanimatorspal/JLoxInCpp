@@ -1,49 +1,49 @@
 [
 {
   "directory": "C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug",
-  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -emit-pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -x c++-header -o CMakeFiles\\LuaBirali.dir\\cmake_pch.hxx.pch -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\out\\build\\x64-debug\\CMakeFiles\\LuaBirali.dir\\cmake_pch.hxx.cxx",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/sansk/OneDrive/Desktop/LuaBirali/include -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -emit-pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -x c++-header -o CMakeFiles\\LuaBirali.dir\\cmake_pch.hxx.pch -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\out\\build\\x64-debug\\CMakeFiles\\LuaBirali.dir\\cmake_pch.hxx.cxx",
   "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\out\\build\\x64-debug\\CMakeFiles\\LuaBirali.dir\\cmake_pch.hxx.cxx",
   "output": "CMakeFiles\\LuaBirali.dir\\cmake_pch.hxx.pch"
 },
 {
   "directory": "C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug",
-  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\LuaBirali.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\LuaBirali.cpp",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/sansk/OneDrive/Desktop/LuaBirali/include -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\LuaBirali.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\LuaBirali.cpp",
   "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\LuaBirali.cpp",
   "output": "CMakeFiles\\LuaBirali.dir\\src\\LuaBirali.cpp.obj"
 },
 {
   "directory": "C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug",
-  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Scanner.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Scanner.cpp",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/sansk/OneDrive/Desktop/LuaBirali/include -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Scanner.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Scanner.cpp",
   "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Scanner.cpp",
   "output": "CMakeFiles\\LuaBirali.dir\\src\\Scanner.cpp.obj"
 },
 {
   "directory": "C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug",
-  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Token.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Token.cpp",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/sansk/OneDrive/Desktop/LuaBirali/include -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Token.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Token.cpp",
   "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Token.cpp",
   "output": "CMakeFiles\\LuaBirali.dir\\src\\Token.cpp.obj"
 },
 {
   "directory": "C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug",
-  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Expression.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Expression.cpp",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/sansk/OneDrive/Desktop/LuaBirali/include -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Expression.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Expression.cpp",
   "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Expression.cpp",
   "output": "CMakeFiles\\LuaBirali.dir\\src\\Expression.cpp.obj"
 },
 {
   "directory": "C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug",
-  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Parser.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Parser.cpp",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/sansk/OneDrive/Desktop/LuaBirali/include -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Parser.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Parser.cpp",
   "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Parser.cpp",
   "output": "CMakeFiles\\LuaBirali.dir\\src\\Parser.cpp.obj"
 },
 {
   "directory": "C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug",
-  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Interpreter.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Interpreter.cpp",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/sansk/OneDrive/Desktop/LuaBirali/include -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Interpreter.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Interpreter.cpp",
   "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Interpreter.cpp",
   "output": "CMakeFiles\\LuaBirali.dir\\src\\Interpreter.cpp.obj"
 },
 {
   "directory": "C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug",
-  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Environment.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Environment.cpp",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -IC:/Users/sansk/OneDrive/Desktop/LuaBirali/include -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -flto=thin -Xclang -include-pch -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx.pch -Xclang -include -Xclang C:/Users/sansk/OneDrive/Desktop/LuaBirali/out/build/x64-debug/CMakeFiles/LuaBirali.dir/cmake_pch.hxx -o CMakeFiles\\LuaBirali.dir\\src\\Environment.cpp.obj -c C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Environment.cpp",
   "file": "C:\\Users\\sansk\\OneDrive\\Desktop\\LuaBirali\\src\\Environment.cpp",
   "output": "CMakeFiles\\LuaBirali.dir\\src\\Environment.cpp.obj"
 }

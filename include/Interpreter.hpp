@@ -34,8 +34,9 @@ class Interpreter : public Visitor {
     virtual atype Visit(BlockStmt& inExpression);
     virtual atype Visit(IfStmt& inExpression);
     virtual atype Visit(WhileStmt& inExpression);
+    virtual atype Visit(BreakStmt& inExpression);
 
-    void Execute(Stmt& inStmt);
+    atype Execute(Stmt& inStmt);
     atype Evaluate(Expr& inExpr);
     bool IsTruthy(Object inObject);
     bool IsEqual(Object a, Object b);
