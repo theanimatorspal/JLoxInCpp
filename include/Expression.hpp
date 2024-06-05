@@ -21,11 +21,12 @@ struct BlockStmt;
 struct IfStmt;
 struct WhileStmt;
 struct BreakStmt;
+struct FunctionStmt;
 
 struct Special {
     bool mBreak = false;
 };
-using atype = var<up<Expr*>, s, Object, Special>;
+using atype = var<up<Expr*>, Object, Special>;
 enum Atype : int { Atype_Expr, Atype_String, Atype_Object, Atype_Special };
 
 struct Visitor {
@@ -45,6 +46,7 @@ struct Visitor {
     virtual atype Visit(IfStmt& inExpression)         = 0;
     virtual atype Visit(WhileStmt& inExpression)      = 0;
     virtual atype Visit(BreakStmt& inExpression)      = 0;
+    virtual atype Visit(FunctionStmt& inExpression)   = 0;
     virtual ~Visitor()                                = default;
 };
 
@@ -167,24 +169,13 @@ struct BreakStmt : public Stmt {
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 
-struct AstPrinter : public Visitor {
-    s Print(Expr& inExpr) { return std::get<s>(inExpr.Accept(*this)); };
-    virtual atype Visit(Binary& inBinary) override;
-    virtual atype Visit(Grouping& inGrouping) override;
-    virtual atype Visit(Unary& inUnary) override;
-    virtual atype Visit(Literal& inLiteral) override;
-    template <typename... Expression> s Parenthesize(sv inName, Expression&... inExprs) {
-        std::stringstream ss;
-        ss << "(" << inName;
-        (
-             [&] {
-                 ss << " ";
-                 ss << std::get<s>(inExprs.Accept(*this));
-             }(),
-             ...);
-        ss << ")";
-        return ss.str();
-    }
+struct FunctionStmt : public Stmt {
+    Token mName;
+    v<Token> mParamters;
+    v<up<Stmt>> mBody;
+    FunctionStmt(Token inName, v<Token> inParameters, v<up<Stmt>> inBody)
+        : mName(inName), mParamters(inParameters), mBody(mv(inBody)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 
 } // namespace Birali

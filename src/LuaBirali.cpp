@@ -33,11 +33,6 @@ void Lua::Run(const sv inCommand) {
     auto Tokens = scanner.ScanTokens();
     Parser Parser(Tokens);
     if (mHadError) return;
-    // for (Token token : Tokens) {
-    //     std::cout << token.ToString() << '\n';
-    // }
-    // std::cout << AstPrinter().Print(*Expr) << "\n";
-    // mInterpreter.Interpret(*Expr);
     auto Statements = Parser.Parse();
     mInterpreter.Interpret(Statements);
 

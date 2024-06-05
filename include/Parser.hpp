@@ -18,12 +18,14 @@ class Parser {
     up<Expr> Or();
     up<Expr> And();
     up<Expr> Call();
+    up<Expr> FinishCall(up<Expr> inCallee);
 
     up<Stmt> Statement();
     up<Stmt> PrintStatement();
     up<Stmt> ExpressionStatement();
     up<Stmt> Declaration();
     up<Stmt> VarDeclartion();
+    up<Stmt> FunctionDeclaration(sv inKind);
     v<up<Stmt>> BlockStatement();
     up<Stmt> IfStatement();
     up<Stmt> WhileStatement();

@@ -3,9 +3,19 @@
 #include "Environment.hpp"
 
 namespace Birali {
+
+struct CallableFunction : public Callable {
+    CallableFunction(FunctionStmt& inFunctionStmt) : mFunctionStmt(inFunctionStmt) {
+        mArity = inFunctionStmt.mParamters.size();
+    }
+    FunctionStmt& mFunctionStmt;
+    virtual Object Call(Interpreter& inI, v<Object>& inArguments) override;
+    virtual s ToString() override { return "<fn" + mFunctionStmt.mName.mLexeme + ">"; }
+};
+
 class Interpreter : public Visitor {
     public:
-    Interpreter() { mEnvironment = mu<Environment>(nullptr); }
+    Interpreter();
     static bool mHadRuntimeError;
     class RuntimeError : public std::runtime_error {
         public:
@@ -27,6 +37,7 @@ class Interpreter : public Visitor {
     virtual atype Visit(Literal& inLiteral);
     virtual atype Visit(Variable& inExpression);
     virtual atype Visit(Assign& inExpression);
+    virtual atype Visit(Callee& inCall);
 
     virtual atype Visit(ExpressionStmt& inExpression);
     virtual atype Visit(PrintStmt& inExpression);
@@ -35,6 +46,7 @@ class Interpreter : public Visitor {
     virtual atype Visit(IfStmt& inExpression);
     virtual atype Visit(WhileStmt& inExpression);
     virtual atype Visit(BreakStmt& inExpression);
+    virtual atype Visit(FunctionStmt& inExpression);
 
     atype Execute(Stmt& inStmt);
     atype Evaluate(Expr& inExpr);
@@ -44,7 +56,7 @@ class Interpreter : public Visitor {
     void CheckNumberOperands(Token inOperator, Object inLeft, Object inRight);
     void ExecuteBlock(v<up<Stmt>>& inStatements, up<Environment> inEnvironment);
 
-    private:
     up<Environment> mEnvironment;
+    up<Environment> mGlobals;
 };
 } // namespace Birali

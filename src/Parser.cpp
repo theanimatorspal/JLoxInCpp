@@ -105,7 +105,31 @@ up<Expr> Parser::Unary() {
     return Call();
 }
 
-up<Expr> Parser::Call() {}
+up<Expr> Parser::Call() {
+    up<Expr> Expr = Primary();
+    while (true) {
+        if (Match(LEFT_PAREN)) {
+            Expr = FinishCall(mv(Expr));
+        } else {
+            break;
+        }
+    }
+    return mv(Expr);
+}
+
+up<Expr> Parser::FinishCall(up<Expr> inCallee) {
+    v<up<Expr>> Arguments;
+    if (not Check(RIGHT_PAREN)) {
+        do {
+            if (Arguments.size() >= 255) {
+                Error(Peek(), "Can't have more than 255 arguments");
+            }
+            Arguments.push_back(mv(Expression()));
+        } while (Match(COMMA));
+    }
+    Token paren = Consume(RIGHT_PAREN, "Expected ')' after arguments.");
+    return mu<Callee>(mv(inCallee), paren, mv(Arguments));
+}
 
 up<Expr> Parser::Primary() {
     if (Match(FALSE)) return mu<Literal>(false);
@@ -161,6 +185,7 @@ v<up<Stmt>> Parser::BlockStatement() {
 
 up<Stmt> Parser::Declaration() {
     try {
+        if (Match(FUN)) return FunctionDeclaration("function");
         if (Match(VAR)) return VarDeclartion();
         return Statement();
     } catch (ParseError& inError) {
@@ -177,6 +202,24 @@ up<Stmt> Parser::VarDeclartion() {
     }
     Consume(SEMICOLON, "Expected ';' after declaration.");
     return mu<VarStmt>(Name, mv(Initializer));
+}
+
+up<Stmt> Parser::FunctionDeclaration(sv inKind) {
+    Token Name = Consume(IDENTIFIER, "Expected " + s(inKind) + "name.");
+    Consume(LEFT_PAREN, "Expected '(' after " + s(inKind) + "name.");
+    v<Token> Parameters;
+    if (not Check(RIGHT_PAREN)) {
+        do {
+            if (Parameters.size() >= 255) {
+                Error(Peek(), "Can't have more than 255 parameters.");
+            }
+            Parameters.push_back(Consume(IDENTIFIER, "Expected parameter name."));
+        } while (Match(COMMA));
+    }
+    Consume(RIGHT_PAREN, "Expected ')' after parameters");
+    Consume(LEFT_BRACE, "Expected '{' before " + s(inKind) + "body.");
+    v<up<Stmt>> Body = BlockStatement();
+    return mu<FunctionStmt>(Name, Parameters, mv(Body));
 }
 
 up<Stmt> Parser::IfStatement() {

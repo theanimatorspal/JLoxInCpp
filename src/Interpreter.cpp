@@ -1,6 +1,33 @@
 #include "Interpreter.hpp"
 
 using namespace Birali;
+Object CallableFunction::Call(Interpreter& inI, v<Object>& inArguments) {
+    auto Env = mu<Environment>(inI.mGlobals.get());
+    for (int i = 0; i < inArguments.size(); i++) {
+        Env->Define(mFunctionStmt.mParamters[i].mLexeme, inArguments[i]);
+    }
+    inI.ExecuteBlock(mFunctionStmt.mBody, mv(Env));
+    return std::nullopt;
+}
+
+struct GlobalFunctionCallable_clock : Callable {
+    int mArity = 0;
+    virtual Object Call(Interpreter& inI, v<Object>& inObject) {
+        using namespace std;
+        auto now      = chrono::system_clock::now();
+        auto duration = now.time_since_epoch();
+        return (double)chrono::duration_cast<chrono::milliseconds>(duration).count();
+    }
+    virtual s ToString() { return ""; }
+};
+
+Interpreter::Interpreter() {
+    mGlobals      = mu<Environment>(nullptr);
+    mEnvironment  = mu<Environment>(nullptr);
+    *mEnvironment = *mGlobals;
+
+    mGlobals->Define("clock", mksh<GlobalFunctionCallable_clock>());
+}
 
 bool Interpreter::mHadRuntimeError = false;
 
@@ -203,3 +230,30 @@ atype Interpreter::Visit(WhileStmt& inExpression) {
 }
 
 atype Interpreter::Visit(BreakStmt& inExpression) { return Special{.mBreak = true}; }
+
+atype Interpreter::Visit(Callee& inCall) {
+    Object callee = g<Object>(Evaluate(*inCall.mCallee));
+    v<Object> Arguments;
+    for (auto& arg : inCall.mArguments) {
+        Arguments.push_back(g<Object>(Evaluate(*arg)));
+    }
+
+    if (not(callee->index() == ObjectIndex_Callable)) {
+        throw RuntimeError(inCall.mParen, "Can only call functions and classes");
+    }
+
+    auto function = g<sp<Callable>>(callee.value());
+    if (Arguments.size() != function->mArity) {
+        throw RuntimeError(inCall.mParen,
+                           "Expected " + std::to_string(function->mArity) + "Arguments but got " +
+                                std::to_string(Arguments.size()) + " arguments.");
+    }
+
+    return function->Call(*this, Arguments);
+}
+
+atype Interpreter::Visit(FunctionStmt& inExpression) {
+    auto Function = mksh<CallableFunction>(inExpression);
+    mEnvironment->Define(inExpression.mName.mLexeme, Function);
+    return std::nullopt;
+}

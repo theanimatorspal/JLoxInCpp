@@ -102,23 +102,47 @@ const Birali::sv TokenStrings[COUNT] = {
 };
 
 std::ostream& operator<<(std::ostream& os, const TokenType& token);
-using Object = opt<var<Number, s, bool>>;
-enum ObjectIndex : size_t { ObjectIndex_Number, ObjectIndex_String, ObjectIndex_Boolean };
+
+struct Callable;
+struct Interpreter;
+using Object        = opt<var<Number, s, bool, sp<Callable>>>;
+using CallType      = std::function<Object(Interpreter&, v<Object>&)>;
+using ToStringFType = std::function<s()>;
+
+struct Callable {
+    int mArity = 0;
+    virtual Object Call(Interpreter& inI, v<Object>& inObject) { return std::nullopt; }
+    virtual s ToString() { return ""; }
+    virtual ~Callable() = default;
+    bool operator==(const Callable& other) const { return mArity == other.mArity; }
+};
+
+enum ObjectIndex : size_t {
+    ObjectIndex_Number,
+    ObjectIndex_String,
+    ObjectIndex_Boolean,
+    ObjectIndex_Callable
+};
+
 inline s ToString(Object inObject) {
     if (not inObject.has_value()) {
         return "nil";
     } else {
         switch (inObject->index()) {
+            case ObjectIndex_Callable:
+                return g<sp<Callable>>(inObject.value())->ToString();
             case ObjectIndex_Number:
                 return std::to_string(g<Number>(inObject.value()));
             case ObjectIndex_String:
                 return g<s>(inObject.value());
-            case ObjectIndex_Boolean:
+            case ObjectIndex_Boolean: {
                 bool boolean = g<bool>(inObject.value());
                 if (boolean) {
                     return "true";
+                } else {
+                    return "false";
                 }
-                return "false";
+            }
         }
     }
     return "nil";
