@@ -21,7 +21,7 @@ Token Parser::Consume(TokenType inType, const sv inStr) {
 up<Expr> Parser::Expression() { return Assignment(); }
 
 up<Expr> Parser::Assignment() {
-    up<Expr> expr = Equality();
+    up<Expr> expr = Or();
     if (Match(EQUAL)) {
         Token Equals   = Previous();
         up<Expr> Value = Assignment();
@@ -32,6 +32,28 @@ up<Expr> Parser::Assignment() {
         Error(Equals, "Invalid Assignment Target.");
     }
     return mv(expr);
+}
+
+up<Expr> Parser::Or() {
+    up<Expr> Exprr = And();
+
+    if (Match(OR)) {
+        Token ortoken  = Previous();
+        up<Expr> Right = And();
+        return mu<Logical>(mv(Exprr), ortoken, mv(Right));
+    }
+
+    return Exprr;
+}
+
+up<Expr> Parser::And() {
+    up<Expr> Exprr = Equality();
+    if (Match(AND)) {
+        Token andtoken = Previous();
+        up<Expr> Right = Equality();
+        return mu<Logical>(mv(Exprr), andtoken, mv(Right));
+    }
+    return Exprr;
 }
 
 up<Expr> Parser::Equality() {
@@ -107,6 +129,9 @@ up<Expr> Parser::Primary() {
 up<Stmt> Parser::Statement() {
     if (Match(PRINT)) return PrintStatement();
     if (Match(LEFT_BRACE)) return mu<BlockStmt>(BlockStatement());
+    if (Match(IF)) return IfStatement();
+    if (Match(WHILE)) return WhileStatement();
+    if (Match(FOR)) return ForStatement();
     return ExpressionStatement();
 }
 
@@ -149,4 +174,72 @@ up<Stmt> Parser::VarDeclartion() {
     }
     Consume(SEMICOLON, "Expected ';' after declaration.");
     return mu<VarStmt>(Name, mv(Initializer));
+}
+
+up<Stmt> Parser::IfStatement() {
+    Consume(LEFT_PAREN, "Expected '(' after if statment.");
+    up<Expr> Condition = Expression();
+    Consume(RIGHT_PAREN, "Expected ')' after if condition.");
+    up<Stmt> ThenBranch = Statement();
+    up<Stmt> ElseBranch = nullptr;
+    if (Match(ELSE)) {
+        ElseBranch = Statement();
+    }
+    return mu<IfStmt>(mv(Condition), mv(ThenBranch), mv(ElseBranch));
+}
+
+up<Stmt> Parser::WhileStatement() {
+    Consume(LEFT_PAREN, "Expected '(' after while statement.");
+    up<Expr> Condition = Expression();
+    Consume(RIGHT_PAREN, "Expected ')' after while condition.");
+    up<Stmt> body = Statement();
+    return mu<WhileStmt>(mv(Condition), mv(body));
+}
+
+up<Stmt> Parser::ForStatement() {
+    Consume(LEFT_PAREN, "Expected '(' after 'for'.");
+    up<Stmt> Initializer = nullptr;
+    if (Match(SEMICOLON)) {
+        Initializer = nullptr;
+    } else if (Match(VAR)) {
+        Initializer = VarDeclartion();
+    } else {
+        Initializer = ExpressionStatement();
+    }
+
+    up<Expr> Condition = nullptr;
+    if (not Check(SEMICOLON)) {
+        Condition = Expression();
+    }
+    Consume(SEMICOLON, "Expected ';' after Loop Condition");
+
+    up<Expr> Increment = nullptr;
+    if (not Check(RIGHT_PAREN)) {
+        Increment = Expression();
+    }
+    Consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+
+    up<Stmt> Body = Statement();
+
+    if (Increment != nullptr) {
+        v<up<Stmt>> sts;
+        sts.push_back(mv(Body));
+        sts.push_back(mv(Increment));
+        Body = mu<BlockStmt>(mv(sts));
+    }
+
+    if (Condition == nullptr) {
+        Condition = mu<Literal>(true);
+    } else {
+        Body = mu<WhileStmt>(mv(Condition), mv(Body));
+    }
+
+    if (Initializer != nullptr) {
+        v<up<Stmt>> sts;
+        sts.push_back(mv(Initializer));
+        sts.push_back(mv(Body));
+        Body = mu<BlockStmt>(mv(sts));
+    }
+
+    return Body;
 }

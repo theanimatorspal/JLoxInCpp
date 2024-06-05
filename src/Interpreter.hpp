@@ -21,6 +21,7 @@ class Interpreter : public Visitor {
 
     void Interpret(v<up<Stmt>>& inStatements);
     virtual atype Visit(Binary& inBinary);
+    virtual atype Visit(Logical& inBinary);
     virtual atype Visit(Grouping& inGrouping);
     virtual atype Visit(Unary& inUnary);
     virtual atype Visit(Literal& inLiteral);
@@ -31,6 +32,8 @@ class Interpreter : public Visitor {
     virtual atype Visit(PrintStmt& inExpression);
     virtual atype Visit(VarStmt& inExpression);
     virtual atype Visit(BlockStmt& inExpression);
+    virtual atype Visit(IfStmt& inExpression);
+    virtual atype Visit(WhileStmt& inExpression);
 
     void Execute(Stmt& inStmt);
     atype Evaluate(Expr& inExpr);

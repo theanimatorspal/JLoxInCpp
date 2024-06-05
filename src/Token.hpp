@@ -112,7 +112,11 @@ inline s ToString(Object inObject) {
             case ObjectIndex_String:
                 return g<s>(inObject.value());
             case ObjectIndex_Boolean:
-                return std::to_string(g<bool>(inObject.value()));
+                bool boolean = g<bool>(inObject.value());
+                if (boolean) {
+                    return "true";
+                }
+                return "false";
         }
     }
     return "nil";

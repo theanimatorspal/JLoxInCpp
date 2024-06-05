@@ -5,13 +5,14 @@ using namespace Birali;
 bool Interpreter::mHadRuntimeError = false;
 
 void Interpreter::Interpret(v<up<Stmt>>& inStmts) {
-    try {
-        for (auto& stmt : inStmts) {
-            Execute(*stmt);
-        }
-    } catch (const RuntimeError& inError) {
-        std::cout << inError.what() << "\n";
+    // try {
+    for (auto& stmt : inStmts) {
+        Execute(*stmt);
     }
+    // } catch (const RuntimeError& inError) {
+    //     std::cout << inError.what() << "\n";
+    //     mHadRuntimeError = true;
+    // }
 }
 
 void Interpreter::Execute(Stmt& inStmt) { inStmt.Accept(*this); }
@@ -68,6 +69,15 @@ atype Interpreter::Visit(Binary& inBinary) {
     return std::nullopt;
 };
 
+atype Interpreter::Visit(Logical& inLogial) {
+    Object Left = g<Object>(Evaluate(*inLogial.mLeft));
+    if (inLogial.mOperator.mType == OR) {
+        if (IsTruthy(Left)) return Left;
+    } else { // And
+        if (not IsTruthy(Left)) return Left;
+    }
+    return Evaluate(*inLogial.mRight);
+}
 atype Interpreter::Visit(Grouping& inGrouping) { return Evaluate(*inGrouping.mExpr); };
 atype Interpreter::Visit(Unary& inUnary) {
     atype Right = Evaluate(*inUnary.mExpr);
@@ -84,7 +94,13 @@ atype Interpreter::Visit(Unary& inUnary) {
     }
     return std::nullopt;
 };
-atype Interpreter::Visit(Literal& inLiteral) { return inLiteral.mObject.value(); };
+atype Interpreter::Visit(Literal& inLiteral) {
+    if (inLiteral.mObject.has_value()) {
+        return inLiteral.mObject;
+    } else {
+        return std::nullopt;
+    }
+};
 
 atype Interpreter::Evaluate(Expr& inExpr) { return inExpr.Accept(*this); }
 bool Interpreter::IsTruthy(Object inObject) {
@@ -150,20 +166,38 @@ atype Interpreter::Visit(VarStmt& inExpression) {
 
 atype Interpreter::Visit(BlockStmt& inStatement) {
     ExecuteBlock(inStatement.mStatements, mu<Environment>(nullptr));
-    return 0;
+    return std::nullopt;
+}
+
+atype Interpreter::Visit(IfStmt& inStatement) {
+    if (IsTruthy(g<Object>(Evaluate(*inStatement.mCondition)))) {
+        Execute(*inStatement.mThenBranch);
+    } else if (inStatement.mElseBranch) {
+        Execute(*inStatement.mElseBranch);
+    }
+    return std::nullopt;
 }
 
 void Interpreter::ExecuteBlock(v<up<Stmt>>& inStatements, up<Environment> inEnvironment) {
     up<Environment> Previous  = mv(this->mEnvironment);
     inEnvironment->mEnclosing = Previous.get();
-    try {
-        this->mEnvironment = mv(inEnvironment);
-        for (auto& stmts : inStatements) {
-            Execute(*stmts);
-        }
-    } catch (const std::exception& inAny) {
-        std::cout << "Exception:" << inAny.what() << '\n';
+
+    // try {
+    this->mEnvironment = mv(inEnvironment);
+    for (auto& stmts : inStatements) {
+        Execute(*stmts);
     }
 
+    // } catch (const std::exception& inAny) {
+    //     std::cout << "Exception:" << inAny.what() << '\n';
+    // }
+
     this->mEnvironment = mv(Previous);
+}
+
+atype Interpreter::Visit(WhileStmt& inExpression) {
+    while (IsTruthy(g<Object>(Evaluate(*inExpression.mCondition)))) {
+        Execute(*inExpression.mBody);
+    }
+    return std::nullopt;
 }

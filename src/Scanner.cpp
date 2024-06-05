@@ -95,6 +95,7 @@ void Scanner::ScanToken() {
                 while (Peek() != '\n' and not IsAtEnd()) {
                     Advance();
                 }
+                break;
             }
             AddToken(SLASH);
             break;

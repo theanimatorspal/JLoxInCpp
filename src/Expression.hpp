@@ -6,20 +6,25 @@ namespace Birali {
 
 struct Expr;
 struct Binary;
+struct Logical;
 struct Unary;
 struct Grouping;
 struct Literal;
 struct Variable;
 struct Assign;
+struct WhileStmt;
 
 struct ExpressionStmt;
 struct PrintStmt;
 struct VarStmt;
 struct BlockStmt;
-using atype = var<up<Expr*>, s, Object, int>;
+struct IfStmt;
+struct WhileStmt;
+using atype = var<up<Expr*>, s, Object>;
 
 struct Visitor {
     virtual atype Visit(Binary& inBinary)             = 0;
+    virtual atype Visit(Logical& inBinary)            = 0;
     virtual atype Visit(Grouping& inGrouping)         = 0;
     virtual atype Visit(Unary& inUnary)               = 0;
     virtual atype Visit(Literal& inLiteral)           = 0;
@@ -30,24 +35,37 @@ struct Visitor {
     virtual atype Visit(PrintStmt& inExpression)      = 0;
     virtual atype Visit(VarStmt& inExpression)        = 0;
     virtual atype Visit(BlockStmt& inExpression)      = 0;
+    virtual atype Visit(IfStmt& inExpression)         = 0;
+    virtual atype Visit(WhileStmt& inExpression)      = 0;
     virtual ~Visitor()                                = default;
 };
 
-struct Stmt {
-    virtual atype Accept(Visitor& inVisitor) = 0;
-    virtual ~Stmt()                          = default;
-};
+// struct Stmt {
+//     virtual atype Accept(Visitor& inVisitor) = 0;
+//     virtual ~Stmt()                          = default;
+// };
 
 struct Expr {
     virtual atype Accept(Visitor& inVisitor) = 0;
     virtual ~Expr()                          = default;
 };
 
+using Stmt = Expr; // TODO Remove this
+
 struct Binary : public Expr {
     up<Expr> mLeft;
     Token mOperator;
     up<Expr> mRight;
     Binary(up<Expr> left, Token op, up<Expr> right)
+        : mLeft(std::move(left)), mOperator(op), mRight(std::move(right)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
+struct Logical : public Expr {
+    up<Expr> mLeft;
+    Token mOperator;
+    up<Expr> mRight;
+    Logical(up<Expr> left, Token op, up<Expr> right)
         : mLeft(std::move(left)), mOperator(op), mRight(std::move(right)) {}
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
@@ -106,6 +124,25 @@ struct VarStmt : public Stmt {
 struct BlockStmt : public Stmt {
     v<up<Stmt>> mStatements;
     BlockStmt(v<up<Stmt>> inStatements) : mStatements(mv(inStatements)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
+struct IfStmt : public Stmt {
+    up<Expr> mCondition;
+    up<Stmt> mThenBranch;
+    up<Stmt> mElseBranch = nullptr;
+    IfStmt(up<Expr> inCondition, up<Stmt> inThenBranch, up<Stmt> inElseBranch)
+        : mCondition(mv(inCondition)),
+          mThenBranch(mv(inThenBranch)),
+          mElseBranch(mv(inElseBranch)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
+struct WhileStmt : public Stmt {
+    up<Expr> mCondition;
+    up<Stmt> mBody;
+    WhileStmt(up<Expr> inCondition, up<Stmt> inBody)
+        : mCondition(mv(inCondition)), mBody(mv(inBody)) {}
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 
