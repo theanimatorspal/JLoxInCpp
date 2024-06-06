@@ -14,5 +14,9 @@ struct Environment {
         if (mEnclosing != nullptr) return mEnclosing->GetEnclosingRef();
         return mEnclosing;
     };
+
+    // void PutAtEnd(sp<Environment> inEnv) {
+    //     GetEnclosingRef() = inEnv;
+    //     }
 };
 } // namespace Birali

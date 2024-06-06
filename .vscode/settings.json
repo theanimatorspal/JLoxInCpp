@@ -21,7 +21,7 @@
           "cmake.debugConfig": {
                     // "cwd": "C:\\Users\\sansk\\OneDrive\\Desktop\\PBR",
                     "visualizerFile": "${workspaceFolder}/Visualizers/glm.natvis",
-                    "console": "externalTerminal"
+                    // "console": "externalTerminal"
           },
           /* EDITOR */
           "editor.matchBrackets": "near",

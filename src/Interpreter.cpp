@@ -8,7 +8,7 @@ Object CallableFunction::Call(Interpreter& inI, v<Object>& inArguments) {
     }
 
     try {
-        inI.ExecuteBlock(mFunctionStmt.mBody, Env);
+        inI.ExecuteBlock(mFunctionStmt.mBody, mv(Env));
     } catch (Interpreter::Return& inReturn) {
         return inReturn.mValue;
     }
@@ -196,7 +196,7 @@ atype Interpreter::Visit(VarStmt& inExpression) {
 }
 
 atype Interpreter::Visit(BlockStmt& inStatement) {
-    ExecuteBlock(inStatement.mStatements, mu<Environment>(nullptr));
+    ExecuteBlock(inStatement.mStatements, mksh<Environment>(mEnvironment));
     return std::nullopt;
 }
 
@@ -210,19 +210,19 @@ atype Interpreter::Visit(IfStmt& inStatement) {
 }
 
 void Interpreter::ExecuteBlock(v<up<Stmt>>& inStatements, sp<Environment> inEnvironment) {
-    sp<Environment> Previous = this->mEnvironment;
-    // inEnvironment->mEnclosing = Previous;
-    inEnvironment->GetEnclosingRef() = Previous;
-    Previous->mEnclosing             = nullptr;
+    sp<Environment> Previous = mv(this->mEnvironment);
+    // auto& Enclosingref       = inEnvironment->GetEnclosingRef();
+    // Enclosingref             = Previous;
+    // Enclosingref->mEnclosing = nullptr;
 
     try {
-        this->mEnvironment = inEnvironment;
+        this->mEnvironment = mv(inEnvironment);
         for (auto& stmts : inStatements) {
             Execute(*stmts);
         }
-        this->mEnvironment = Previous;
+        this->mEnvironment = mv(Previous);
     } catch (Return& inReturn) {
-        this->mEnvironment = Previous;
+        this->mEnvironment = mv(Previous);
         throw Return(inReturn.mValue);
     }
 }
