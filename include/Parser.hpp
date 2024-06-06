@@ -31,6 +31,7 @@ class Parser {
     up<Stmt> WhileStatement();
     up<Stmt> ForStatement();
     up<Stmt> BreakStatement();
+    up<Stmt> ReturnStatement();
     v<up<Stmt>> Parse() {
         v<up<Stmt>> Statements;
         while (not IsAtEnd()) {

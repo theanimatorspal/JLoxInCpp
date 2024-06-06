@@ -9,6 +9,6 @@ struct Environment {
     void Define(s inName, Object inValue) { mValues[inName] = inValue; }
     void Assign(Token inName, Object inValue);
     Object Get(Token inName);
-    Environment(Environment* inEnvironment) : mEnclosing(mv(inEnvironment)) {}
+    Environment(Environment* inEnvironment) : mEnclosing(inEnvironment) {}
 };
 } // namespace Birali

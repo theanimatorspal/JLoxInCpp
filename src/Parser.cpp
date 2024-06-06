@@ -159,6 +159,7 @@ up<Stmt> Parser::Statement() {
     if (Match(WHILE)) return WhileStatement();
     if (Match(FOR)) return ForStatement();
     if (Match(BREAK)) return BreakStatement();
+    if (Match(RETURN)) return ReturnStatement();
     return ExpressionStatement();
 }
 
@@ -293,4 +294,15 @@ up<Stmt> Parser::ForStatement() {
 up<Stmt> Parser::BreakStatement() {
     Consume(SEMICOLON, "Expected ';' after break statement.");
     return mu<BreakStmt>();
+}
+
+up<Stmt> Parser::ReturnStatement() {
+    Token Keyword  = Previous();
+    up<Expr> Value = nullptr;
+    if (not Check(SEMICOLON)) {
+        Value = Expression();
+    }
+
+    Consume(SEMICOLON, "Expect ';' after return statement.");
+    return mu<ReturnStmt>(Keyword, mv(Value));
 }

@@ -22,6 +22,7 @@ struct IfStmt;
 struct WhileStmt;
 struct BreakStmt;
 struct FunctionStmt;
+struct ReturnStmt;
 
 struct Special {
     bool mBreak = false;
@@ -47,6 +48,7 @@ struct Visitor {
     virtual atype Visit(WhileStmt& inExpression)      = 0;
     virtual atype Visit(BreakStmt& inExpression)      = 0;
     virtual atype Visit(FunctionStmt& inExpression)   = 0;
+    virtual atype Visit(ReturnStmt& inExpression)     = 0;
     virtual ~Visitor()                                = default;
 };
 
@@ -175,6 +177,13 @@ struct FunctionStmt : public Stmt {
     v<up<Stmt>> mBody;
     FunctionStmt(Token inName, v<Token> inParameters, v<up<Stmt>> inBody)
         : mName(inName), mParamters(inParameters), mBody(mv(inBody)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
+struct ReturnStmt : public Stmt {
+    Token mKeyword;
+    up<Expr> mValue;
+    ReturnStmt(Token inKeyword, up<Expr> inValue) : mKeyword(inKeyword), mValue(mv(inValue)) {}
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 

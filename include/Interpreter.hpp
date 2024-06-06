@@ -17,8 +17,7 @@ class Interpreter : public Visitor {
     public:
     Interpreter();
     static bool mHadRuntimeError;
-    class RuntimeError : public std::runtime_error {
-        public:
+    struct RuntimeError : public std::runtime_error {
         RuntimeError(Token inOperator, s inSt)
             : mOperator(inOperator),
               std::runtime_error(inSt + "\n[line " + std::to_string(inOperator.mLine) + "]") {
@@ -27,6 +26,11 @@ class Interpreter : public Visitor {
 
         private:
         Token mOperator;
+    };
+
+    struct Return : public std::runtime_error {
+        Object mValue;
+        Return(Object inValue) : std::runtime_error(""), mValue(inValue) {}
     };
 
     void Interpret(v<up<Stmt>>& inStatements);
@@ -47,6 +51,7 @@ class Interpreter : public Visitor {
     virtual atype Visit(WhileStmt& inExpression);
     virtual atype Visit(BreakStmt& inExpression);
     virtual atype Visit(FunctionStmt& inExpression);
+    virtual atype Visit(ReturnStmt& inExpression);
 
     atype Execute(Stmt& inStmt);
     atype Evaluate(Expr& inExpr);

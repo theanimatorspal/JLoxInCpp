@@ -6,7 +6,12 @@ Object CallableFunction::Call(Interpreter& inI, v<Object>& inArguments) {
     for (int i = 0; i < inArguments.size(); i++) {
         Env->Define(mFunctionStmt.mParamters[i].mLexeme, inArguments[i]);
     }
-    inI.ExecuteBlock(mFunctionStmt.mBody, mv(Env));
+
+    try {
+        inI.ExecuteBlock(mFunctionStmt.mBody, mv(Env));
+    } catch (Interpreter::Return& inReturn) {
+        return inReturn.mValue;
+    }
     return std::nullopt;
 }
 
@@ -22,11 +27,10 @@ struct GlobalFunctionCallable_clock : Callable {
 };
 
 Interpreter::Interpreter() {
-    mGlobals      = mu<Environment>(nullptr);
-    mEnvironment  = mu<Environment>(nullptr);
-    *mEnvironment = *mGlobals;
-
+    mGlobals     = mu<Environment>(nullptr);
+    mEnvironment = mu<Environment>(nullptr);
     mGlobals->Define("clock", mksh<GlobalFunctionCallable_clock>());
+    *mEnvironment = *mGlobals;
 }
 
 bool Interpreter::mHadRuntimeError = false;
@@ -209,17 +213,16 @@ void Interpreter::ExecuteBlock(v<up<Stmt>>& inStatements, up<Environment> inEnvi
     up<Environment> Previous  = mv(this->mEnvironment);
     inEnvironment->mEnclosing = Previous.get();
 
-    // try {
-    this->mEnvironment = mv(inEnvironment);
-    for (auto& stmts : inStatements) {
-        Execute(*stmts);
+    try {
+        this->mEnvironment = mv(inEnvironment);
+        for (auto& stmts : inStatements) {
+            Execute(*stmts);
+        }
+        this->mEnvironment = mv(Previous);
+    } catch (Return& inReturn) {
+        this->mEnvironment = mv(Previous);
+        throw Return(inReturn.mValue);
     }
-
-    // } catch (const std::exception& inAny) {
-    //     std::cout << "Exception:" << inAny.what() << '\n';
-    // }
-
-    this->mEnvironment = mv(Previous);
 }
 
 atype Interpreter::Visit(WhileStmt& inExpression) {
@@ -256,4 +259,12 @@ atype Interpreter::Visit(FunctionStmt& inExpression) {
     auto Function = mksh<CallableFunction>(inExpression);
     mEnvironment->Define(inExpression.mName.mLexeme, Function);
     return std::nullopt;
+}
+
+atype Interpreter::Visit(ReturnStmt& inExpression) {
+    Object Value = std::nullopt;
+    if (inExpression.mValue != nullptr) {
+        Value = g<Object>(Evaluate(*inExpression.mValue));
+    }
+    throw Return(Value);
 }
