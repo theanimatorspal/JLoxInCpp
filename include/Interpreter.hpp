@@ -5,10 +5,12 @@
 namespace Birali {
 
 struct CallableFunction : public Callable {
-    CallableFunction(FunctionStmt& inFunctionStmt) : mFunctionStmt(inFunctionStmt) {
+    CallableFunction(FunctionStmt& inFunctionStmt, sp<Environment> inEnv)
+        : mFunctionStmt(inFunctionStmt), mClosure(inEnv) {
         mArity = inFunctionStmt.mParamters.size();
     }
     FunctionStmt& mFunctionStmt;
+    sp<Environment> mClosure;
     virtual Object Call(Interpreter& inI, v<Object>& inArguments) override;
     virtual s ToString() override { return "<fn" + mFunctionStmt.mName.mLexeme + ">"; }
 };
@@ -59,9 +61,9 @@ class Interpreter : public Visitor {
     bool IsEqual(Object a, Object b);
     void CheckNumberOperands(Token inOperator, Object inOperand);
     void CheckNumberOperands(Token inOperator, Object inLeft, Object inRight);
-    void ExecuteBlock(v<up<Stmt>>& inStatements, up<Environment> inEnvironment);
+    void ExecuteBlock(v<up<Stmt>>& inStatements, sp<Environment> inEnvironment);
 
-    up<Environment> mEnvironment;
-    up<Environment> mGlobals;
+    sp<Environment> mEnvironment;
+    sp<Environment> mGlobals;
 };
 } // namespace Birali

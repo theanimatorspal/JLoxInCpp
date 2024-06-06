@@ -2,13 +2,13 @@
 
 using namespace Birali;
 Object CallableFunction::Call(Interpreter& inI, v<Object>& inArguments) {
-    auto Env = mu<Environment>(inI.mGlobals.get());
+    auto Env = mksh<Environment>(mClosure);
     for (int i = 0; i < inArguments.size(); i++) {
         Env->Define(mFunctionStmt.mParamters[i].mLexeme, inArguments[i]);
     }
 
     try {
-        inI.ExecuteBlock(mFunctionStmt.mBody, mv(Env));
+        inI.ExecuteBlock(mFunctionStmt.mBody, Env);
     } catch (Interpreter::Return& inReturn) {
         return inReturn.mValue;
     }
@@ -27,8 +27,8 @@ struct GlobalFunctionCallable_clock : Callable {
 };
 
 Interpreter::Interpreter() {
-    mGlobals     = mu<Environment>(nullptr);
-    mEnvironment = mu<Environment>(nullptr);
+    mGlobals     = mksh<Environment>(nullptr);
+    mEnvironment = mksh<Environment>(nullptr);
     mGlobals->Define("clock", mksh<GlobalFunctionCallable_clock>());
     *mEnvironment = *mGlobals;
 }
@@ -209,18 +209,20 @@ atype Interpreter::Visit(IfStmt& inStatement) {
     return std::nullopt;
 }
 
-void Interpreter::ExecuteBlock(v<up<Stmt>>& inStatements, up<Environment> inEnvironment) {
-    up<Environment> Previous  = mv(this->mEnvironment);
-    inEnvironment->mEnclosing = Previous.get();
+void Interpreter::ExecuteBlock(v<up<Stmt>>& inStatements, sp<Environment> inEnvironment) {
+    sp<Environment> Previous = this->mEnvironment;
+    // inEnvironment->mEnclosing = Previous;
+    inEnvironment->GetEnclosingRef() = Previous;
+    Previous->mEnclosing             = nullptr;
 
     try {
-        this->mEnvironment = mv(inEnvironment);
+        this->mEnvironment = inEnvironment;
         for (auto& stmts : inStatements) {
             Execute(*stmts);
         }
-        this->mEnvironment = mv(Previous);
+        this->mEnvironment = Previous;
     } catch (Return& inReturn) {
-        this->mEnvironment = mv(Previous);
+        this->mEnvironment = Previous;
         throw Return(inReturn.mValue);
     }
 }
@@ -256,7 +258,7 @@ atype Interpreter::Visit(Callee& inCall) {
 }
 
 atype Interpreter::Visit(FunctionStmt& inExpression) {
-    auto Function = mksh<CallableFunction>(inExpression);
+    auto Function = mksh<CallableFunction>(inExpression, mEnvironment);
     mEnvironment->Define(inExpression.mName.mLexeme, Function);
     return std::nullopt;
 }

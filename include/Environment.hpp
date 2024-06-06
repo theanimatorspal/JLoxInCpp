@@ -4,11 +4,15 @@
 
 namespace Birali {
 struct Environment {
-    Environment* mEnclosing = nullptr;
+    sp<Environment> mEnclosing = nullptr;
     umap<s, Object> mValues;
     void Define(s inName, Object inValue) { mValues[inName] = inValue; }
     void Assign(Token inName, Object inValue);
     Object Get(Token inName);
-    Environment(Environment* inEnvironment) : mEnclosing(inEnvironment) {}
+    Environment(sp<Environment> inEnvironment) : mEnclosing(inEnvironment) {}
+    sp<Environment>& GetEnclosingRef() {
+        if (mEnclosing != nullptr) return mEnclosing->GetEnclosingRef();
+        return mEnclosing;
+    };
 };
 } // namespace Birali
