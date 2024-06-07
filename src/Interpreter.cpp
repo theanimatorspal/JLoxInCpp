@@ -180,8 +180,8 @@ atype Interpreter::Visit(PrintStmt& inExpression) {
 }
 
 atype Interpreter::Visit(Variable& inExpression) {
-    LookUpVariable(inExpression.mName, inExpression);
-    return mEnvironment->Get(inExpression.mName);
+    return LookUpVariable(inExpression.mName, inExpression);
+    // return mEnvironment->Get(inExpression.mName);
 }
 
 atype Interpreter::Visit(Assign& inExpression) {
@@ -288,7 +288,7 @@ atype Interpreter::Visit(ReturnStmt& inExpression) {
 }
 
 Object Interpreter::LookUpVariable(Token Name, Expr& inExpr) {
-    if (mLocals[&inExpr]) {
+    if (mLocals.contains(&inExpr)) {
         int distance = mLocals[&inExpr];
         return mEnvironment->GetAt(distance, Name.mLexeme);
     } else {
