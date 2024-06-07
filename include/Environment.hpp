@@ -3,7 +3,7 @@
 #include "Token.hpp"
 
 namespace Birali {
-struct Environment {
+struct Environment : std::enable_shared_from_this<Environment> {
     sp<Environment> mEnclosing = nullptr;
     umap<s, Object> mValues;
     void Define(s inName, Object inValue) { mValues[inName] = inValue; }
@@ -15,6 +15,9 @@ struct Environment {
         return mEnclosing;
     };
 
+    Object GetAt(int inDistance, s inName);
+    sp<Environment> Anchester(int inDistance);
+    void AssignAt(int inDistance, Token inName, Object inValue);
     // void PutAtEnd(sp<Environment> inEnv) {
     //     GetEnclosingRef() = inEnv;
     //     }

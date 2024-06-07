@@ -1,4 +1,5 @@
 #pragma once
+#include <stack>
 #include <concepts>
 #include <cstdio>
 #include <fstream>

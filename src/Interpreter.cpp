@@ -178,10 +178,19 @@ atype Interpreter::Visit(PrintStmt& inExpression) {
     return std::nullopt;
 }
 
-atype Interpreter::Visit(Variable& inExpression) { return mEnvironment->Get(inExpression.mName); }
+atype Interpreter::Visit(Variable& inExpression) {
+    LookUpVariable(inExpression.mName, inExpression);
+    return mEnvironment->Get(inExpression.mName);
+}
 
 atype Interpreter::Visit(Assign& inExpression) {
     Object Value = g<Object>(Evaluate(*inExpression.mValue));
+    if (mLocals[&inExpression]) {
+        int Distance = mLocals[&inExpression];
+        mEnvironment->AssignAt(Distance, inExpression.mName, Value);
+    } else {
+        // mGlobals->Assign(inExpression.mName, Value);
+    }
     mEnvironment->Assign(inExpression.mName, Value);
     return Value;
 }
@@ -270,3 +279,14 @@ atype Interpreter::Visit(ReturnStmt& inExpression) {
     }
     throw Return(Value);
 }
+
+Object Interpreter::LookUpVariable(Token Name, Expr& inExpr) {
+    if (mLocals[&inExpr]) {
+        int distance = mLocals[&inExpr];
+        return mEnvironment->GetAt(distance, Name.mLexeme);
+    } else {
+        return mEnvironment->Get(Name);
+    }
+}
+
+void Interpreter::Resolve(Expr& inExpr, int inDepth) { mLocals[&inExpr] = inDepth; }

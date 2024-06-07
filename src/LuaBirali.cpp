@@ -3,6 +3,7 @@
 #include "Expression.hpp"
 #include "Parser.hpp"
 #include "Interpreter.hpp"
+#include "Resolver.hpp"
 
 using namespace Birali;
 bool Lua::mHadError = false;
@@ -32,8 +33,14 @@ void Lua::Run(const sv inCommand) {
     Scanner scanner(inCommand);
     auto Tokens = scanner.ScanTokens();
     Parser Parser(Tokens);
-    if (mHadError) return;
     auto Statements = Parser.Parse();
+    if (mHadError) return;
+
+    Resolver Resolver(mInterpreter);
+    Resolver.Resolve(Statements);
+
+    if (mHadError) return;
+
     mInterpreter.Interpret(Statements);
 
     if (mInterpreter.mHadRuntimeError) {
@@ -70,3 +77,5 @@ int main(int argc, char** argv) {
     // std::cout << Print.Print(*Expr) << "\n";
     return 0;
 }
+
+void Lua::HadError() { mHadError = true; }

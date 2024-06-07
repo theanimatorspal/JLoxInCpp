@@ -12,7 +12,9 @@ add_executable(LuaBirali
  src/Expression.cpp 
  src/Parser.cpp
  src/Interpreter.cpp 
- src/Environment.cpp)
+ src/Environment.cpp
+ src/Resolver.cpp
+ )
 
  include_directories(include)
 

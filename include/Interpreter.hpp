@@ -62,8 +62,11 @@ class Interpreter : public Visitor {
     void CheckNumberOperands(Token inOperator, Object inOperand);
     void CheckNumberOperands(Token inOperator, Object inLeft, Object inRight);
     void ExecuteBlock(v<up<Stmt>>& inStatements, sp<Environment> inEnvironment);
+    Object LookUpVariable(Token Name, Expr& inExpr);
+    void Resolve(Expr& inExpr, int inDepth);
 
     sp<Environment> mEnvironment;
     sp<Environment> mGlobals;
+    umap<Expr*, Integer> mLocals;
 };
 } // namespace Birali

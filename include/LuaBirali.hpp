@@ -9,6 +9,7 @@ struct Lua {
     void RunFile(const sv inFileName);
     static void Error(int inLine, const sv inMessage);
     static void Report(int inLine, const sv inWhere, const sv inMessage);
+    static void HadError();
 
     private:
     static bool mHadError;
