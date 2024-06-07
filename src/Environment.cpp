@@ -38,3 +38,7 @@ sp<Environment> Environment::Anchester(int inDistance) {
 void Environment::AssignAt(int inDistance, Token inName, Object inValue) {
     Anchester(inDistance)->mValues[inName.mLexeme] = inValue;
 }
+
+void Environment::DefineAt(int inDistance, s inName, Object inValue) {
+    Anchester(inDistance)->mValues[inName] = inValue;
+}

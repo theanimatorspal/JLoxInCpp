@@ -22,7 +22,7 @@ atype Resolver::Visit(Unary& inUnary) {
 };
 atype Resolver::Visit(Literal& inLiteral) { return std::nullopt; };
 atype Resolver::Visit(Variable& inExpression) {
-    if (not mScopes.empty() and mScopes.back()[inExpression.mName.mLexeme] and
+    if (not mScopes.empty() and mScopes.back().contains(inExpression.mName.mLexeme) and
         mScopes.back()[inExpression.mName.mLexeme] == false) {
         Error(inExpression.mName, "Can't read local variable in its own initializer");
     }

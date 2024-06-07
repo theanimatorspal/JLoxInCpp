@@ -30,7 +30,8 @@ Interpreter::Interpreter() {
     mGlobals     = mksh<Environment>(nullptr);
     mEnvironment = mksh<Environment>(nullptr);
     mGlobals->Define("clock", mksh<GlobalFunctionCallable_clock>());
-    *mEnvironment = *mGlobals;
+    mEnvironment->mEnclosing = mGlobals;
+    // *mEnvironment            = *mGlobals;
 }
 
 bool Interpreter::mHadRuntimeError = false;
@@ -189,9 +190,9 @@ atype Interpreter::Visit(Assign& inExpression) {
         int Distance = mLocals[&inExpression];
         mEnvironment->AssignAt(Distance, inExpression.mName, Value);
     } else {
-        // mGlobals->Assign(inExpression.mName, Value);
+        mGlobals->Assign(inExpression.mName, Value);
     }
-    mEnvironment->Assign(inExpression.mName, Value);
+    // mEnvironment->Assign(inExpression.mName, Value);
     return Value;
 }
 
@@ -268,6 +269,12 @@ atype Interpreter::Visit(Callee& inCall) {
 
 atype Interpreter::Visit(FunctionStmt& inExpression) {
     auto Function = mksh<CallableFunction>(inExpression, mEnvironment);
+    if (mLocals[&inExpression]) {
+        int Distance = mLocals[&inExpression];
+        mEnvironment->DefineAt(Distance, inExpression.mName.mLexeme, Function);
+    } else {
+        mGlobals->Define(inExpression.mName.mLexeme, Function);
+    }
     mEnvironment->Define(inExpression.mName.mLexeme, Function);
     return std::nullopt;
 }
@@ -285,7 +292,7 @@ Object Interpreter::LookUpVariable(Token Name, Expr& inExpr) {
         int distance = mLocals[&inExpr];
         return mEnvironment->GetAt(distance, Name.mLexeme);
     } else {
-        return mEnvironment->Get(Name);
+        return mGlobals->Get(Name);
     }
 }
 

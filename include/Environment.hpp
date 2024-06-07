@@ -18,6 +18,7 @@ struct Environment : std::enable_shared_from_this<Environment> {
     Object GetAt(int inDistance, s inName);
     sp<Environment> Anchester(int inDistance);
     void AssignAt(int inDistance, Token inName, Object inValue);
+    void DefineAt(int inDistance, s inName, Object inValue);
     // void PutAtEnd(sp<Environment> inEnv) {
     //     GetEnclosingRef() = inEnv;
     //     }
