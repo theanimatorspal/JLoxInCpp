@@ -1,5 +1,5 @@
 {
-          "workbench.colorTheme": "GitHub Dark",
+          "workbench.colorTheme": "Gruvbox Dark (Hard)",
           "git.enableSmartCommit": true,
           "git.confirmSync": false,
           "gitlens.currentLine.enabled": false,
@@ -106,7 +106,7 @@
           "cmake.showOptionsMovedNotification": false,
           "C_Cpp.intelliSenseEngine": "disabled",
           "cmake.showConfigureWithDebuggerNotification": false,
-          "breadcrumbs.enabled": false,
+          "breadcrumbs.enabled": true,
           "workbench.activityBar.location": "bottom",
           "notebook.output.fontSize": 10,
           "workbench.layoutControl.enabled": false,

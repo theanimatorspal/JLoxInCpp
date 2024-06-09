@@ -126,6 +126,7 @@ void Resolver::ResolveLocal(Expr& inExpr, Token inName) {
         }
     }
 }
+
 void Resolver::ResolveFunction(FunctionStmt& inStmt, FunctionType inType) {
     FunctionType enclosingFunction = mCurrentFunctionType;
     mCurrentFunctionType           = inType;
@@ -147,4 +148,33 @@ Resolver::ResolverError Resolver::Error(Token inToken, const sv inMessage) {
     }
     Lua::HadError();
     return ResolverError{};
+}
+
+atype Resolver::Visit(ClassStmt& inExpression) {
+    Declare(inExpression.mName);
+    Define(inExpression.mName);
+    BeginScope();
+    mScopes.back()["this"] = true;
+    for (auto& method : inExpression.mMethods) {
+        FunctionType dec = FunctionType::METHOD;
+        ResolveFunction(*method, dec);
+    }
+    EndScope();
+    return std::nullopt;
+}
+
+atype Resolver::Visit(GetStmt& inExpression) {
+    Resolve(*inExpression.mObject);
+    return std::nullopt;
+}
+
+atype Resolver::Visit(SetStmt& inExpression) {
+    Resolve(*inExpression.mValue);
+    Resolve(*inExpression.mObject);
+    return std::nullopt;
+}
+
+atype Resolver::Visit(This& inExpression) {
+    ResolveLocal(inExpression, inExpression.mKeyword);
+    return std::nullopt;
 }

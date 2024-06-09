@@ -5,8 +5,8 @@
       "name": "windows-base",
       "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
+      "binaryDir": "${sourceDir}/zout/build/${presetName}",
+      "installDir": "${sourceDir}/zout/install/${presetName}",
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++",
@@ -72,8 +72,8 @@
     {
       "name": "default",
       "hidden": true,
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
+      "binaryDir": "${sourceDir}/zout/build/${presetName}",
+      "installDir": "${sourceDir}/zout/install/${presetName}",
       "generator": "Ninja"
     },
     {

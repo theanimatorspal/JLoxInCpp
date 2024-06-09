@@ -13,6 +13,7 @@ struct Literal;
 struct Variable;
 struct Assign;
 struct Callee;
+struct This;
 
 struct ExpressionStmt;
 struct PrintStmt;
@@ -23,6 +24,9 @@ struct WhileStmt;
 struct BreakStmt;
 struct FunctionStmt;
 struct ReturnStmt;
+struct ClassStmt;
+struct GetStmt;
+struct SetStmt;
 
 struct Special {
     bool mBreak = false;
@@ -31,6 +35,7 @@ using atype = var<up<Expr*>, Object, Special>;
 enum Atype : int { Atype_Expr, Atype_String, Atype_Object, Atype_Special };
 
 struct Visitor {
+    virtual atype Visit(This& inBinary)               = 0;
     virtual atype Visit(Binary& inBinary)             = 0;
     virtual atype Visit(Logical& inBinary)            = 0;
     virtual atype Visit(Grouping& inGrouping)         = 0;
@@ -49,6 +54,9 @@ struct Visitor {
     virtual atype Visit(BreakStmt& inExpression)      = 0;
     virtual atype Visit(FunctionStmt& inExpression)   = 0;
     virtual atype Visit(ReturnStmt& inExpression)     = 0;
+    virtual atype Visit(ClassStmt& inExpression)      = 0;
+    virtual atype Visit(GetStmt& inExpression)        = 0;
+    virtual atype Visit(SetStmt& inVisitor)           = 0;
     virtual ~Visitor()                                = default;
 };
 
@@ -123,6 +131,12 @@ struct Callee : public Expr {
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 
+struct This : public Expr {
+    Token mKeyword;
+    This(Token inKeyword) : mKeyword(inKeyword) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
 struct ExpressionStmt : public Stmt {
     up<Expr> mExpr;
     ExpressionStmt(up<Expr> inExpr) : mExpr(mv(inExpr)) {}
@@ -184,6 +198,30 @@ struct ReturnStmt : public Stmt {
     Token mKeyword;
     up<Expr> mValue;
     ReturnStmt(Token inKeyword, up<Expr> inValue) : mKeyword(inKeyword), mValue(mv(inValue)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
+struct ClassStmt : public Stmt {
+    Token mName;
+    v<sp<FunctionStmt>> mMethods;
+    ClassStmt(Token inName, v<sp<FunctionStmt>> inMethods)
+        : mName(inName), mMethods(mv(inMethods)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
+struct GetStmt : public Stmt {
+    Token mName;
+    up<Expr> mObject;
+    GetStmt(Token inName, up<Expr> inObject) : mName(inName), mObject(mv(inObject)) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
+struct SetStmt : public Stmt {
+    up<Expr> mObject;
+    Token mName;
+    up<Expr> mValue;
+    SetStmt(up<Expr> inObject, Token inName, up<Expr> inValue)
+        : mObject(mv(inObject)), mName(inName), mValue(mv(inValue)) {}
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 

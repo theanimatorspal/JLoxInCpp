@@ -175,7 +175,7 @@ atype Interpreter::Visit(ExpressionStmt& inExpression) {
 
 atype Interpreter::Visit(PrintStmt& inExpression) {
     Object Value = g<Object>(Evaluate(*inExpression.mExpr));
-    std::cout << ToString(Value) << "\n";
+    std::cout << ToString(Value) << std::endl;
     return std::nullopt;
 }
 
@@ -253,11 +253,18 @@ atype Interpreter::Visit(Callee& inCall) {
         Arguments.push_back(g<Object>(Evaluate(*arg)));
     }
 
-    if (not(callee->index() == ObjectIndex_Callable)) {
-        throw RuntimeError(inCall.mParen, "Can only call functions and classes");
+    if (not(callee->index() == ObjectIndex_Callable or callee->index() == ObjectIndex_Class)) {
+        throw RuntimeError(inCall.mParen, "Can only call functions and class constructors");
     }
 
-    auto function = g<sp<Callable>>(callee.value());
+    sp<Callable> function;
+
+    if (callee->index() == ObjectIndex_Callable) {
+        function = g<sp<Callable>>(callee.value());
+    } else {
+        function = g<sp<ClassType>>(callee.value());
+    }
+
     if (Arguments.size() != function->mArity) {
         throw RuntimeError(inCall.mParen,
                            "Expected " + std::to_string(function->mArity) + "Arguments but got " +
@@ -296,4 +303,45 @@ Object Interpreter::LookUpVariable(Token Name, Expr& inExpr) {
     }
 }
 
+atype Interpreter::Visit(ClassStmt& inExpression) {
+    mEnvironment->Define(inExpression.mName.mLexeme, std::nullopt);
+    umap<s, sp<CallableFunction>> Methods;
+    for (auto& method : inExpression.mMethods) {
+        Methods[method->mName.mLexeme] = mksh<CallableFunction>(*method, mEnvironment);
+    }
+    auto Class = mksh<ClassType>(inExpression.mName.mLexeme, mv(Methods));
+    mEnvironment->Assign(inExpression.mName, Class);
+    return std::nullopt;
+}
+
 void Interpreter::Resolve(Expr& inExpr, int inDepth) { mLocals[&inExpr] = inDepth; }
+
+atype Interpreter::Visit(GetStmt& inExpression) {
+    Object obj = g<Object>(Evaluate(*inExpression.mObject));
+    if (obj->index() == ObjectIndex_ClassInstance) {
+        return g<sp<ClassInstance>>(obj.value())->Get(inExpression.mName);
+    }
+    throw RuntimeError(inExpression.mName, "Only instance have properties.");
+}
+
+atype Interpreter::Visit(SetStmt& inExpression) {
+    Object obj = g<Object>(Evaluate(*inExpression.mObject));
+    if (not(obj->index() == ObjectIndex_ClassInstance)) {
+        throw RuntimeError(inExpression.mName, "Only instance have fields");
+    }
+
+    Object value = g<Object>(Evaluate(*inExpression.mValue));
+    auto x       = g<sp<ClassInstance>>(obj.value());
+    x->Set(inExpression.mName, value);
+    return value;
+}
+
+sp<Callable> CallableFunction::Bind(sp<ClassInstance> inInstance) {
+    sp<Environment> env = mksh<Environment>(mClosure);
+    env->Define("this", inInstance);
+    return mksh<CallableFunction>(mFunctionStmt, env);
+}
+
+atype Interpreter::Visit(This& inExpression) {
+    return LookUpVariable(inExpression.mKeyword, inExpression);
+}

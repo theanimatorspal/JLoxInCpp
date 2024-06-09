@@ -1,5 +1,5 @@
 #include "Token.hpp"
-
+#include "Interpreter.hpp"
 using namespace Birali;
 
 std::ostream& operator<<(std::ostream& os, const TokenType& token) {
@@ -30,7 +30,33 @@ s Birali::ToString(Object inObject) {
                     return "false";
                 }
             }
+            case ObjectIndex_Class: {
+                auto x = g<sp<ClassType>>(inObject.value());
+                return "class[" + x->mName + "]";
+            }
+            case ObjectIndex_ClassInstance: {
+                auto x = g<sp<ClassInstance>>(inObject.value());
+                return x->mClassType.mName + " instance.";
+            }
         }
     }
     return "nil";
 }
+
+Object ClassType::Call(Interpreter& inI, v<Object>& inObject) {
+    sp<ClassInstance> Inst = mksh<ClassInstance>(*this);
+    return Inst;
+}
+
+Object ClassInstance::Get(Token& inName) {
+    if (mFields.contains(inName.mLexeme)) {
+        return mFields[inName.mLexeme];
+    }
+    bool hasMethod = mClassType.mMethods.contains(inName.mLexeme);
+    if (hasMethod) {
+        return mClassType.mMethods[inName.mLexeme]->Bind(shared_from_this());
+    }
+    throw Interpreter::RuntimeError(inName, "Undefined Property '" + inName.mLexeme + "'.");
+}
+
+void ClassInstance::Set(Token& inName, Object inValue) { mFields[inName.mLexeme] = inValue; }

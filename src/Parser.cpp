@@ -28,6 +28,11 @@ up<Expr> Parser::Assignment() {
         auto Variable  = dynamic_cast<struct Variable*>(expr.get());
         if (Variable) {
             return mu<Assign>(Variable->mName, mv(Value));
+        } else {
+            auto Get = dynamic_cast<struct GetStmt*>(expr.get());
+            if (Get) {
+                return mu<SetStmt>(mv(Get->mObject), Get->mName, mv(Value));
+            }
         }
         Error(Equals, "Invalid Assignment Target.");
     }
@@ -110,6 +115,9 @@ up<Expr> Parser::Call() {
     while (true) {
         if (Match(LEFT_PAREN)) {
             Expr = FinishCall(mv(Expr));
+        } else if (Match(DOT)) {
+            Token Name = Consume(IDENTIFIER, "Expected Property name after '.'.");
+            Expr       = mu<GetStmt>(Name, mv(Expr));
         } else {
             break;
         }
@@ -137,6 +145,9 @@ up<Expr> Parser::Primary() {
     if (Match(NIL)) return mu<Literal>(std::nullopt);
     if (Match(IDENTIFIER)) {
         return mu<Variable>(Previous());
+    }
+    if (Match(THIS)) {
+        return mu<This>(Previous());
     }
 
     if (Match(NUMBER, STRING)) {
@@ -187,6 +198,7 @@ v<up<Stmt>> Parser::BlockStatement() {
 up<Stmt> Parser::Declaration() {
     try {
         if (Match(FUN)) return FunctionDeclaration("function");
+        if (Match(CLASS)) return ClassDeclaration();
         if (Match(VAR)) return VarDeclartion();
         return Statement();
     } catch (ParseError& inError) {
@@ -205,7 +217,7 @@ up<Stmt> Parser::VarDeclartion() {
     return mu<VarStmt>(Name, mv(Initializer));
 }
 
-up<Stmt> Parser::FunctionDeclaration(sv inKind) {
+up<FunctionStmt> Parser::FunctionDeclaration(sv inKind) {
     Token Name = Consume(IDENTIFIER, "Expected " + s(inKind) + "name.");
     Consume(LEFT_PAREN, "Expected '(' after " + s(inKind) + "name.");
     v<Token> Parameters;
@@ -305,4 +317,17 @@ up<Stmt> Parser::ReturnStatement() {
 
     Consume(SEMICOLON, "Expect ';' after return statement.");
     return mu<ReturnStmt>(Keyword, mv(Value));
+}
+
+up<Stmt> Parser::ClassDeclaration() {
+    Token Name = Consume(IDENTIFIER, "Expected class name.");
+    Consume(LEFT_BRACE, "Expected '{' before class body.");
+
+    v<sp<FunctionStmt>> Methods;
+    while (not Check(RIGHT_BRACE) and not IsAtEnd()) {
+        Methods.push_back(mv(FunctionDeclaration("method")));
+    }
+
+    Consume(RIGHT_BRACE, "Expected '}' after class body.");
+    return mu<ClassStmt>(Name, mv(Methods));
 }

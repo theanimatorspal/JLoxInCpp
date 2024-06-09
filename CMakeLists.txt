@@ -44,6 +44,8 @@ target_precompile_headers ( LuaBirali
 add_custom_command(
     TARGET LuaBirali POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_SOURCE_DIR}/out/build/${CMAKE_PRESET_NAME}/compile_commands.json"
+            "${CMAKE_SOURCE_DIR}/zout/build/${CMAKE_PRESET_NAME}/compile_commands.json"
             "${CMAKE_SOURCE_DIR}/compile_commands.json"
 )
+
+add_subdirectory(utility)

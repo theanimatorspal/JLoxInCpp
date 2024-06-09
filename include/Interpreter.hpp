@@ -11,6 +11,7 @@ struct CallableFunction : public Callable {
     }
     FunctionStmt& mFunctionStmt;
     sp<Environment> mClosure;
+    sp<Callable> Bind(sp<ClassInstance> inInstance);
     virtual Object Call(Interpreter& inI, v<Object>& inArguments) override;
     virtual s ToString() override { return "<fn" + mFunctionStmt.mName.mLexeme + ">"; }
 };
@@ -44,6 +45,7 @@ class Interpreter : public Visitor {
     virtual atype Visit(Variable& inExpression);
     virtual atype Visit(Assign& inExpression);
     virtual atype Visit(Callee& inCall);
+    virtual atype Visit(This& inExpression);
 
     virtual atype Visit(ExpressionStmt& inExpression);
     virtual atype Visit(PrintStmt& inExpression);
@@ -54,6 +56,9 @@ class Interpreter : public Visitor {
     virtual atype Visit(BreakStmt& inExpression);
     virtual atype Visit(FunctionStmt& inExpression);
     virtual atype Visit(ReturnStmt& inExpression);
+    virtual atype Visit(ClassStmt& inExpression);
+    virtual atype Visit(GetStmt& inExpression);
+    virtual atype Visit(SetStmt& inExpression);
 
     atype Execute(Stmt& inStmt);
     atype Evaluate(Expr& inExpr);

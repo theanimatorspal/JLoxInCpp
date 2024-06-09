@@ -69,7 +69,6 @@ int main(int argc, char** argv) {
     // } else {
     //     lua.RunPrompt();
     // }
-
     // auto Expr = mu<Binary>(mu<Unary>(Token(MINUS, "-", std::nullopt, 1), mu<Literal>(23.4)),
     //                        Token(STAR, "*", std::nullopt, 1),
     //                        mu<Grouping>(mu<Literal>(56.43)));

@@ -25,7 +25,8 @@ class Parser {
     up<Stmt> ExpressionStatement();
     up<Stmt> Declaration();
     up<Stmt> VarDeclartion();
-    up<Stmt> FunctionDeclaration(sv inKind);
+    up<FunctionStmt> FunctionDeclaration(sv inKind);
+    up<Stmt> ClassDeclaration();
     v<up<Stmt>> BlockStatement();
     up<Stmt> IfStatement();
     up<Stmt> WhileStatement();
