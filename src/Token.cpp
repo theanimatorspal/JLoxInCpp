@@ -43,8 +43,12 @@ s Birali::ToString(Object inObject) {
     return "nil";
 }
 
-Object ClassType::Call(Interpreter& inI, v<Object>& inObject) {
+Object ClassType::Call(Interpreter& inI, v<Object>& inArguments) {
     sp<ClassInstance> Inst = mksh<ClassInstance>(*this);
+    if (mMethods.contains("init")) {
+        auto func = (mMethods["init"]);
+        func->Bind(Inst)->Call(inI, inArguments);
+    }
     return Inst;
 }
 
@@ -56,7 +60,21 @@ Object ClassInstance::Get(Token& inName) {
     if (hasMethod) {
         return mClassType.mMethods[inName.mLexeme]->Bind(shared_from_this());
     }
+
+    hasMethod =
+         mClassType.mSuperClass and mClassType.mSuperClass->mMethods.contains(inName.mLexeme);
+    if (hasMethod) {
+        return mClassType.mSuperClass->mMethods[inName.mLexeme]->Bind(shared_from_this());
+    }
     throw Interpreter::RuntimeError(inName, "Undefined Property '" + inName.mLexeme + "'.");
 }
 
 void ClassInstance::Set(Token& inName, Object inValue) { mFields[inName.mLexeme] = inValue; }
+
+ClassType::ClassType(sv inName, sp<ClassType> inSuperClass, umap<s, sp<CallableFunction>> inMethods)
+    : mName(inName), mSuperClass(inSuperClass), mMethods(inMethods) {
+    mArity = 0;
+    if (mMethods.contains("init")) {
+        mArity = mMethods["init"]->mArity;
+    }
+}

@@ -4,7 +4,7 @@
 namespace Birali {
 class Resolver : Visitor {
     public:
-    enum class FunctionType { NONE, FUNCTION, METHOD };
+    enum class FunctionType { NONE, FUNCTION, METHOD, INITIALIZER };
     class ResolverError : public std::exception {};
     Interpreter& mInterpreter;
     Resolver(Interpreter& inInterpreter) : mInterpreter(inInterpreter) {}
@@ -17,6 +17,7 @@ class Resolver : Visitor {
     virtual atype Visit(Assign& inExpression);
     virtual atype Visit(Callee& inExpression);
     virtual atype Visit(This& inExpression);
+    virtual atype Visit(Super& inExpression);
 
     virtual atype Visit(ExpressionStmt& inExpression);
     virtual atype Visit(PrintStmt& inExpression);

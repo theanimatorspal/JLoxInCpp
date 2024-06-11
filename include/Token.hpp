@@ -134,11 +134,9 @@ enum ObjectIndex : size_t {
 
 struct ClassType : Callable {
     s mName;
+    sp<ClassType> mSuperClass;
     umap<s, sp<CallableFunction>> mMethods;
-    ClassType(sv inName, umap<s, sp<CallableFunction>> inMethods)
-        : mName(inName), mMethods(inMethods) {
-        mArity = 0;
-    }
+    ClassType(sv inName, sp<ClassType> inSuperClass, umap<s, sp<CallableFunction>> inMethods);
     virtual Object Call(Interpreter& inI, v<Object>& inObject);
 };
 

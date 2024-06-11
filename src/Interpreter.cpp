@@ -10,6 +10,9 @@ Object CallableFunction::Call(Interpreter& inI, v<Object>& inArguments) {
     try {
         inI.ExecuteBlock(mFunctionStmt.mBody, mv(Env));
     } catch (Interpreter::Return& inReturn) {
+        if (mIsInitializer) {
+            return mClosure->GetAt(0, "this");
+        }
         return inReturn.mValue;
     }
     return std::nullopt;
@@ -304,13 +307,35 @@ Object Interpreter::LookUpVariable(Token Name, Expr& inExpr) {
 }
 
 atype Interpreter::Visit(ClassStmt& inExpression) {
+    Object SuperClass;
+    if (inExpression.mSuperclass != nullptr) {
+        SuperClass = g<Object>(Evaluate(*inExpression.mSuperclass));
+        if (SuperClass.has_value() and SuperClass->index() != ObjectIndex_Class) {
+            RuntimeError(Token(), "Superclass must be a class");
+        }
+    }
     mEnvironment->Define(inExpression.mName.mLexeme, std::nullopt);
+
+    if (inExpression.mSuperclass != nullptr) {
+        mEnvironment = mksh<Environment>(mEnvironment);
+        mEnvironment->Define("super", SuperClass);
+    }
+
     umap<s, sp<CallableFunction>> Methods;
     for (auto& method : inExpression.mMethods) {
-        Methods[method->mName.mLexeme] = mksh<CallableFunction>(*method, mEnvironment);
+        Methods[method->mName.mLexeme] =
+             mksh<CallableFunction>(*method, mEnvironment, method->mName.mLexeme == "init");
     }
-    auto Class = mksh<ClassType>(inExpression.mName.mLexeme, mv(Methods));
-    mEnvironment->Assign(inExpression.mName, Class);
+    if (SuperClass.has_value() and SuperClass->index() == ObjectIndex_Class) {
+        auto Class = mksh<ClassType>(
+             inExpression.mName.mLexeme, g<sp<ClassType>>(SuperClass.value()), mv(Methods));
+        mEnvironment->Assign(inExpression.mName, Class);
+        mEnvironment = mEnvironment->mEnclosing;
+    } else {
+        auto Class = mksh<ClassType>(inExpression.mName.mLexeme, nullptr, mv(Methods));
+        mEnvironment->Assign(inExpression.mName, Class);
+    }
+
     return std::nullopt;
 }
 
@@ -339,9 +364,21 @@ atype Interpreter::Visit(SetStmt& inExpression) {
 sp<Callable> CallableFunction::Bind(sp<ClassInstance> inInstance) {
     sp<Environment> env = mksh<Environment>(mClosure);
     env->Define("this", inInstance);
-    return mksh<CallableFunction>(mFunctionStmt, env);
+    return mksh<CallableFunction>(mFunctionStmt, env, mIsInitializer);
 }
 
 atype Interpreter::Visit(This& inExpression) {
     return LookUpVariable(inExpression.mKeyword, inExpression);
+}
+
+atype Interpreter::Visit(Super& inExpression) {
+    int Distance    = mLocals[&inExpression];
+    auto SuperClass = g<sp<ClassType>>(mEnvironment->GetAt(Distance, "super").value());
+    auto Instance   = g<sp<ClassInstance>>(mEnvironment->GetAt(Distance - 1, "this").value());
+    auto Method     = SuperClass->mMethods[inExpression.mMethod.mLexeme];
+    if (Method == nullptr) {
+        throw RuntimeError(inExpression.mMethod,
+                           "Undefined property '" + inExpression.mMethod.mLexeme + "'.");
+    }
+    return Method->Bind(Instance);
 }

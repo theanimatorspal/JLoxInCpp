@@ -14,6 +14,7 @@ struct Variable;
 struct Assign;
 struct Callee;
 struct This;
+struct Super;
 
 struct ExpressionStmt;
 struct PrintStmt;
@@ -44,6 +45,7 @@ struct Visitor {
     virtual atype Visit(Variable& inExpression)       = 0;
     virtual atype Visit(Assign& inExpression)         = 0;
     virtual atype Visit(Callee& inExpression)         = 0;
+    virtual atype Visit(Super& inExpression)          = 0;
 
     virtual atype Visit(ExpressionStmt& inExpression) = 0;
     virtual atype Visit(PrintStmt& inExpression)      = 0;
@@ -137,6 +139,13 @@ struct This : public Expr {
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 
+struct Super : public Expr {
+    Token mKeyword;
+    Token mMethod;
+    Super(Token inKeyword, Token inMethod) : mKeyword(inKeyword), mMethod(inMethod) {}
+    virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
+};
+
 struct ExpressionStmt : public Stmt {
     up<Expr> mExpr;
     ExpressionStmt(up<Expr> inExpr) : mExpr(mv(inExpr)) {}
@@ -203,9 +212,10 @@ struct ReturnStmt : public Stmt {
 
 struct ClassStmt : public Stmt {
     Token mName;
+    up<Variable> mSuperclass;
     v<sp<FunctionStmt>> mMethods;
-    ClassStmt(Token inName, v<sp<FunctionStmt>> inMethods)
-        : mName(inName), mMethods(mv(inMethods)) {}
+    ClassStmt(Token inName, up<Variable> inSuperclass, v<sp<FunctionStmt>> inMethods)
+        : mName(inName), mSuperclass(mv(inSuperclass)), mMethods(mv(inMethods)) {}
     virtual atype Accept(Visitor& inVisitor) { return inVisitor.Visit(*this); }
 };
 

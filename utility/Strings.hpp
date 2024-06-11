@@ -1,3 +1,29 @@
+#include "include.hpp"
+
+namespace Birali::str {
+constexpr sv namespaceStart       = R"""(
+namespace {0} {{
+
+)""";
+
+constexpr sv scopeEnd             = R"""(
+}}
+)""";
+
+constexpr sv scopeEndWithSemiCoon = R"""(
+}};
+)""";
+
+constexpr sv declareStruct        = R"""(struct {0};
+)""";
+
+constexpr sv declareUp            = R"""(     up<{0}> m_{0};
+)""";
+
+constexpr sv structStart          = R"""(struct {0} {{
+)""";
+
+constexpr sv includeAll           = R"""(
 #pragma once
 #include <stack>
 #include <concepts>
@@ -17,8 +43,6 @@
 #include <unordered_map>
 #include <variant>
 #include <vector>
-void* operator new(std::size_t count);
-void operator delete(void* ptr) noexcept;
 
 #define GETTER inline auto
 #define SETTER inline void
@@ -31,7 +55,6 @@ void operator delete(void* ptr) noexcept;
 #undef min
 #endif
 
-namespace Birali {
 template <typename... T> using var           = std::variant<T...>;
 using s                                      = std::string;
 using sv                                     = std::string_view;
@@ -57,6 +80,6 @@ using uc                                     = unsigned char;
 #define mksh std::make_shared
 #define g std::get
 
-} // namespace Birali
+)""";
 
-#include <format>
+} // namespace Birali::str

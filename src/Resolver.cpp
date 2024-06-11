@@ -79,9 +79,13 @@ atype Resolver::Visit(WhileStmt& inExpression) {
 };
 atype Resolver::Visit(BreakStmt& inExpression) { return std::nullopt; };
 atype Resolver::Visit(FunctionStmt& inExpression) {
+    FunctionType DeclType = FunctionType::FUNCTION;
     Declare(inExpression.mName);
+    if (inExpression.mName.mLexeme == "init") {
+        DeclType = FunctionType::INITIALIZER;
+    }
     Define(inExpression.mName);
-    ResolveFunction(inExpression, FunctionType::FUNCTION);
+    ResolveFunction(inExpression, DeclType);
     return std::nullopt;
 };
 atype Resolver::Visit(ReturnStmt& inExpression) {
@@ -89,6 +93,9 @@ atype Resolver::Visit(ReturnStmt& inExpression) {
         Error(inExpression.mKeyword, "Can't return from top level code");
     }
     if (inExpression.mValue != nullptr) {
+        if (mCurrentFunctionType == FunctionType::INITIALIZER) {
+            Error(inExpression.mKeyword, "Can't return a value from initializer.");
+        }
         Resolve(*inExpression.mValue);
     }
     return std::nullopt;
@@ -153,13 +160,34 @@ Resolver::ResolverError Resolver::Error(Token inToken, const sv inMessage) {
 atype Resolver::Visit(ClassStmt& inExpression) {
     Declare(inExpression.mName);
     Define(inExpression.mName);
-    BeginScope();
-    mScopes.back()["this"] = true;
-    for (auto& method : inExpression.mMethods) {
-        FunctionType dec = FunctionType::METHOD;
-        ResolveFunction(*method, dec);
+
+    {
+        if (inExpression.mSuperclass != nullptr) {
+            if (inExpression.mName.mLexeme != inExpression.mSuperclass->mName.mLexeme) {
+                Resolve(*inExpression.mSuperclass);
+                BeginScope();
+                mScopes.back()["super"] = true;
+            } else {
+                Error(inExpression.mSuperclass->mName, "A class cannot inherit from itself.");
+            }
+        }
+
+        {
+            BeginScope();
+            mScopes.back()["this"] = true;
+            for (auto& method : inExpression.mMethods) {
+                FunctionType dec = FunctionType::METHOD;
+                ResolveFunction(*method, dec);
+            }
+            EndScope();
+        }
+
+        if (inExpression.mSuperclass != nullptr) {
+            if (inExpression.mName.mLexeme != inExpression.mSuperclass->mName.mLexeme) {
+                EndScope();
+            }
+        }
     }
-    EndScope();
     return std::nullopt;
 }
 
@@ -175,6 +203,11 @@ atype Resolver::Visit(SetStmt& inExpression) {
 }
 
 atype Resolver::Visit(This& inExpression) {
+    ResolveLocal(inExpression, inExpression.mKeyword);
+    return std::nullopt;
+}
+
+atype Resolver::Visit(Super& inExpression) {
     ResolveLocal(inExpression, inExpression.mKeyword);
     return std::nullopt;
 }

@@ -1,5 +1,5 @@
 {
-          "workbench.colorTheme": "Gruvbox Dark (Hard)",
+          "workbench.colorTheme": "GitHub Light Default",
           "git.enableSmartCommit": true,
           "git.confirmSync": false,
           "gitlens.currentLine.enabled": false,
@@ -21,7 +21,7 @@
           "cmake.debugConfig": {
                     // "cwd": "C:\\Users\\sansk\\OneDrive\\Desktop\\PBR",
                     "visualizerFile": "${workspaceFolder}/Visualizers/glm.natvis",
-                    // "console": "externalTerminal"
+                    "console": "externalTerminal"
           },
           /* EDITOR */
           "editor.matchBrackets": "near",

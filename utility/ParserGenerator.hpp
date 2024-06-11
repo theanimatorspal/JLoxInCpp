@@ -41,7 +41,7 @@ class Scanner {
     bool Match(char inChar);
 };
 
-using atype     = opt<var<s>>;
+using atype     = opt<var<s, v<s>>>;
 using Token     = Scanner::Token;
 using TokenType = Scanner::TokenType;
 
@@ -161,14 +161,4 @@ struct Parser {
     }
 };
 
-class ParserGeneratorDebug : public Visitor {
-    virtual atype Visit(Stmt& inExp) { return std::nullopt; }
-    virtual atype Visit(Grouping& inExp) { return std::nullopt; }
-    virtual atype Visit(Literal& inExp) { return std::nullopt; };
-    virtual atype Visit(Unary& inExp) { return std::nullopt; };
-    virtual atype Visit(Binary& inExp) { return std::nullopt; };
-    virtual atype Visit(Expression& inExp) { return std::nullopt; };
-    virtual atype Visit(Identifier& inExp) { return std::nullopt; };
-};
-// so ja beta, class karke saath mein kar lena
 } // namespace Utils

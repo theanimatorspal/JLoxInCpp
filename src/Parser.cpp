@@ -149,6 +149,12 @@ up<Expr> Parser::Primary() {
     if (Match(THIS)) {
         return mu<This>(Previous());
     }
+    if (Match(SUPER)) {
+        Token Keyword = Previous();
+        Consume(DOT, "Expected dot.");
+        Token Method = Consume(IDENTIFIER, "Expect superclass method name");
+        return mu<Super>(Keyword, Method);
+    }
 
     if (Match(NUMBER, STRING)) {
         return mu<Literal>(Previous().mLiteral);
@@ -320,7 +326,14 @@ up<Stmt> Parser::ReturnStatement() {
 }
 
 up<Stmt> Parser::ClassDeclaration() {
-    Token Name = Consume(IDENTIFIER, "Expected class name.");
+    Token Name              = Consume(IDENTIFIER, "Expected class name.");
+
+    up<Variable> Superclass = nullptr;
+    if (Match(LESS)) {
+        Consume(IDENTIFIER, "Expected Superclass name");
+        Superclass = mu<Variable>(Previous());
+    }
+
     Consume(LEFT_BRACE, "Expected '{' before class body.");
 
     v<sp<FunctionStmt>> Methods;
@@ -329,5 +342,5 @@ up<Stmt> Parser::ClassDeclaration() {
     }
 
     Consume(RIGHT_BRACE, "Expected '}' after class body.");
-    return mu<ClassStmt>(Name, mv(Methods));
+    return mu<ClassStmt>(Name, mv(Superclass), mv(Methods));
 }

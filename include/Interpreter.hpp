@@ -5,10 +5,14 @@
 namespace Birali {
 
 struct CallableFunction : public Callable {
-    CallableFunction(FunctionStmt& inFunctionStmt, sp<Environment> inEnv)
+    CallableFunction(FunctionStmt& inFunctionStmt,
+                     sp<Environment> inEnv,
+                     bool inInitializer = false)
         : mFunctionStmt(inFunctionStmt), mClosure(inEnv) {
-        mArity = inFunctionStmt.mParamters.size();
+        mArity         = inFunctionStmt.mParamters.size();
+        mIsInitializer = inInitializer;
     }
+    bool mIsInitializer = false;
     FunctionStmt& mFunctionStmt;
     sp<Environment> mClosure;
     sp<Callable> Bind(sp<ClassInstance> inInstance);
@@ -46,6 +50,7 @@ class Interpreter : public Visitor {
     virtual atype Visit(Assign& inExpression);
     virtual atype Visit(Callee& inCall);
     virtual atype Visit(This& inExpression);
+    virtual atype Visit(Super& inExpression);
 
     virtual atype Visit(ExpressionStmt& inExpression);
     virtual atype Visit(PrintStmt& inExpression);
