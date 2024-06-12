@@ -1,4 +1,4 @@
-#include "LuaBirali.hpp"
+#include "main.hpp"
 #include "Scanner.hpp"
 #include "Expression.hpp"
 #include "Parser.hpp"
