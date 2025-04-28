@@ -1,4 +1,3 @@
-```markdown
 <h1 align="center">🦎 lox-cpp</h1>
 <p align="center"><i>LOX language interpreter – rewritten from Crafting Interpreters (Java ➡️ C++)</i></p>
 <p align="center"><b>Built with:</b> C++17 🚀 | Pure STL 📚 | No garbage collection (manual suffering)</p>
