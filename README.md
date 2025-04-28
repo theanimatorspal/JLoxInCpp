@@ -18,9 +18,8 @@ This is a C++ implementation of the LOX programming language, based on the book 
 Not a line of Java was spared in the making of this mess — everything is lovingly re-implemented in modern C++17.
 
 > 💡 Written mainly as a learning project to suffer through the pains of building an interpreter by hand.  
-> 🏗️ Modular structure: Scanner, Parser, Interpreter, Resolver, Environment, Token, Expression.  
-> 🔥 Total: **~8K+ lines** of pure C++ pain.
-
+> 🏗️ Modular structure: Scanner, Parser, Interpreter, Resolver, Environment, Token, Expression.
+> 
 ---
 
 ## 🛠️ What's (Supposedly) Working
